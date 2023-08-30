@@ -13,7 +13,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return {
       redirect: {
         permanent: false,
-        destination: '/login', // Redirect if wallet does not have the required token
+        destination: '/login',
       },
     };
   }
