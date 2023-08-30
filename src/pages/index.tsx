@@ -1,7 +1,10 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useIsSearcher } from "~src/hooks/useIsSearcher";
 
 export default function Home() {
+  const {isSearcher} = useIsSearcher();
+  console.log({isSearcher});
   return (
     <>
       <Head>

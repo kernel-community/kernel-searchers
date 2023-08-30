@@ -3,9 +3,11 @@ import { siweClient } from "src/utils/siweClient";
 import { ConnectKitProvider, getDefaultConfig, type SIWESession } from "connectkit";
 import { CHAINS, publicClient, webSocketPublicClient } from "~src/utils/onChainConfig";
 import { WagmiConfig, createConfig } from "wagmi";
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import "~src/styles/globals.css";
 
+const queryClient = new QueryClient()
 const config = createConfig(getDefaultConfig({
   alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID,
   // /env.mjs ensures the the app isn't built without .env vars
@@ -23,21 +25,23 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
       <WagmiConfig config={config}>
-        <siweClient.Provider
-          // Optional parameters
-          enabled={true} // defaults true
-          nonceRefetchInterval={300000} // in milliseconds, defaults to 5 minutes
-          sessionRefetchInterval={300000}// in milliseconds, defaults to 5 minutes
-          signOutOnDisconnect={true} // defaults true
-          signOutOnAccountChange={true} // defaults true
-          signOutOnNetworkChange={true} // defaults true
-          onSignIn={(session?: SIWESession) => { console.log({ session }) }}
-          onSignOut={() => console.log("signed out")}
-        >
-          <ConnectKitProvider theme="retro">
-            <Component {...pageProps} />
-          </ConnectKitProvider>
-        </siweClient.Provider>
+      <QueryClientProvider client={queryClient}>
+          <siweClient.Provider
+            // Optional parameters
+            enabled={true} // defaults true
+            nonceRefetchInterval={300000} // in milliseconds, defaults to 5 minutes
+            sessionRefetchInterval={300000}// in milliseconds, defaults to 5 minutes
+            signOutOnDisconnect={true} // defaults true
+            signOutOnAccountChange={true} // defaults true
+            signOutOnNetworkChange={true} // defaults true
+            onSignIn={(session?: SIWESession) => { console.log({ session }) }}
+            onSignOut={() => console.log("signed out")}
+          >
+            <ConnectKitProvider theme="retro">
+              <Component {...pageProps} />
+            </ConnectKitProvider>
+          </siweClient.Provider>
+      </QueryClientProvider>
       </WagmiConfig>
     </>
   )
