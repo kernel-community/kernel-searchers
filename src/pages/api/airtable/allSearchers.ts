@@ -13,7 +13,7 @@ const base = airtable.base(baseId);
 const allSearchers = async (req: NextApiRequest, res: NextApiResponse) => {
   const addresses: string[] = [];
   try {
-    await base(table).select({view}).eachPage((records, next) => {
+    await base(table).select({ view }).eachPage((records, next) => {
       records.forEach(record => addresses.push(record.get(addressColumn) as string));
       next();
     })
