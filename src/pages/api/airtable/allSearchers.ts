@@ -4,9 +4,9 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
 const baseId = "appYaT73RTzmoKIrq";
-const table = "Kernel v2 Applications";
+const table = "v2: Searchers";
 const view = "Grid view";
-const addressColumn = "wallet address"
+const addressColumn = "address"
 
 const base = airtable.base(baseId);
 

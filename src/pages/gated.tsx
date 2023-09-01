@@ -1,30 +1,30 @@
-import type { GetServerSideProps, NextPage } from "next";
-import { siweServer } from "~src/server/utils/siweServer";
+import type {
+  // GetServerSideProps,
+  NextPage
+} from "next";
+import Main from "src/layout/Main";
+// import { siweServer } from "src/server/utils/siweServer";
+// import walletIsSearcher from "src/server/utils/walletIsSearcher";
 
-const walletHasToken = (address: string): boolean => {
-  console.log({ address });
-  return true;
-}
+// export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+//   const { address } = await siweServer.getSession(req, res);
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const { address } = await siweServer.getSession(req, res);
+//   if (!address || !(walletIsSearcher(address))) {
+//     return {
+//       redirect: {
+//         permanent: false,
+//         destination: '/login',
+//       },
+//     };
+//   }
 
-  if (!address || !(walletHasToken(address))) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/login',
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};
+//   return {
+//     props: {},
+//   };
+// };
 
 const CollectorsOnlyPage: NextPage = () => {
-  return <>Welcome, collector.</>;
+  return <Main>Welcome, collector.</Main>;
 };
 
 export default CollectorsOnlyPage;
