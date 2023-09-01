@@ -1,9 +1,9 @@
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { configureChains } from "wagmi";
-import { foundry, goerli } from "wagmi/chains";
+import { goerli } from "wagmi/chains";
 
-export const CHAINS = [foundry, goerli];
+export const CHAINS = [goerli];
 
 export const { publicClient, webSocketPublicClient } = configureChains(
   CHAINS,
