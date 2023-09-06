@@ -6,7 +6,7 @@ const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOK
 const baseId = "appYaT73RTzmoKIrq";
 const table = "v2: Searchers";
 const view = "Grid view";
-const addressColumn = "address"
+const addressColumn = "wallet"
 
 const base = airtable.base(baseId);
 
