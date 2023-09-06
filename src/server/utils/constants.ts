@@ -1,4 +1,4 @@
-export const DEV_URL = "http://localhost:3001";
+export const DEV_URL = "http://localhost:3000";
 export const PROD_URL = "https://kernel-searchers.vercel.app";
 
 // yyyy-mm-dd
