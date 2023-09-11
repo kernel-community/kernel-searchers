@@ -8,7 +8,10 @@ const isInSearcherList = async (wallet: string) => {
     console.error(error);
     throw error;
   }
-  const found = !!(addresses.find(searcher => searcher.toLowerCase() === wallet.toLowerCase()));
-  return found;
+  if (wallet) {
+    const found = !!(addresses.find(searcher => searcher.toLowerCase() === wallet.toLowerCase()));
+    return found;
+  }
+  else return false;
 }
 export default isInSearcherList;
