@@ -4,6 +4,9 @@ import { siweServer } from "src/server/utils/siweServer";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { URL } from "src/server/utils/myUrl";
+import { useSearcherApplications } from "src/hooks/useSearcherApplications";
+import { useRetrieveApplication } from "src/hooks/useRetrieveApplication";
+import RetroButton from "src/components/RetroButton";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { address } = await siweServer.getSession(req, res);
@@ -20,8 +23,26 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 };
 
 export default function Home({ isSearcher }: { isSearcher: boolean }) {
+  const [applicantIndex, setApplicantIndex] = useState<number>(0);
   const [subtitle, setSubtitle] = useState<string>("");
+  const { applicants } = useSearcherApplications();
+  const { application } = useRetrieveApplication({applicationId: applicants[applicantIndex]});
   const {address, isDisconnected} = useAccount();
+
+  const nextApplicantIndex = () => setApplicantIndex((curr) =>  {
+    if (curr === applicants.length - 1) {
+      return 0;
+    }
+    return ++curr;
+  })
+
+  const prevApplicantIndex = () => setApplicantIndex((curr) =>  {
+    if (curr === 0) {
+      return applicants.length - 1;
+    }
+    return --curr;
+  })
+
   useEffect(() => {
     if (isDisconnected) {
       return setSubtitle("Login")
@@ -40,6 +61,15 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
       </h1>
       <div>
         {subtitle}
+      </div>
+      <div>
+        {
+          JSON.stringify(application?._rawJson)
+        }
+      </div>
+      <div className="flex flex-row gap-3 my-8">
+        <RetroButton type="button" onClick={() => prevApplicantIndex()}>PREV</RetroButton>
+        <RetroButton type="button" onClick={() => nextApplicantIndex()}>NEXT</RetroButton>
       </div>
     </Main>
   );
