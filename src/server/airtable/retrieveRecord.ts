@@ -1,8 +1,9 @@
 import Airtable from "airtable";
+import { BASE_ID, EXPRESSIONS_TABLE } from "./constants";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
-const baseId = "appYaT73RTzmoKIrq";
-const table = "v2: Expressions";
+const baseId = BASE_ID;
+const table = EXPRESSIONS_TABLE.tableName;
 const base = airtable.base(baseId);
 
 export const retrieveRecord = async (id: string) => {

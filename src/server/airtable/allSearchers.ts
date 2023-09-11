@@ -1,11 +1,12 @@
 import Airtable from "airtable";
+import { BASE_ID, SEARCHERS_TABLE } from "./constants";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
-const baseId = "appYaT73RTzmoKIrq";
-const table = "v2: Searchers";
+const baseId = BASE_ID;
+const table = SEARCHERS_TABLE.tableName;
 // make sure this view is filtered for wallets = not null
-const view = "[don't edit] With Wallets";
-const addressColumn = "wallet"
+const view = SEARCHERS_TABLE.views.wallet;
+const addressColumn = SEARCHERS_TABLE.columns.address
 const base = airtable.base(baseId);
 
 export const allSearchers = async () => {

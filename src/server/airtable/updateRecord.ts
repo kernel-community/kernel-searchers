@@ -1,8 +1,9 @@
 // given record id and column name and value
 // update
 import Airtable from "airtable";
+import { BASE_ID } from "./constants";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
-const baseId = "appYaT73RTzmoKIrq";
+const baseId = BASE_ID;
 const base = airtable.base(baseId);
 
 export const updateRecord = async ({

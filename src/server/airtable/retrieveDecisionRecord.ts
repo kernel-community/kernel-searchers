@@ -1,14 +1,15 @@
 import Airtable from "airtable";
+import { ASSIGNMENTS_TABLE, BASE_ID } from "./constants";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
-const baseId = "appYaT73RTzmoKIrq";
-const table = "v2: Searcher <> Candidate";
+const baseId = BASE_ID;
+const table = ASSIGNMENTS_TABLE.tableName;
 // make sure this view is filtered for wallets = not null
-const view = "[don't edit] Grid view";
-const addressColumn = "Searcher wallet";
-const applicantRecordIdColumn = "Applicant ID";
+const view = ASSIGNMENTS_TABLE.views.wallet;
+const addressColumn = ASSIGNMENTS_TABLE.columns.address;
+const applicantRecordIdColumn = ASSIGNMENTS_TABLE.columns.applicantRecordId;
 const base = airtable.base(baseId);
-const tableRecordIdColumn = "Record ID";
+const tableRecordIdColumn = ASSIGNMENTS_TABLE.columns.idColumn;
 
 export const retrieveDecisionRecord = async ({searcherWalletAddress, applicationId}: {searcherWalletAddress: string, applicationId: string}): Promise<string[]> => {
   const applicants: string[] = [];
