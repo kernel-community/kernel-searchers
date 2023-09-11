@@ -2,7 +2,7 @@ import Airtable from "airtable";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
 const baseId = "appYaT73RTzmoKIrq";
-const table = "v2: Searcher <> Applicant";
+const table = "v2: Searcher <> Candidate";
 // make sure this view is filtered for wallets = not null
 const view = "[don't edit] Grid view";
 const addressColumn = "Searcher wallet"

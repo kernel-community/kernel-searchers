@@ -7,7 +7,7 @@ import isInSearcherList from "src/server/utils/isInSearcherList";
 import { retrieveDecisionRecord } from "src/server/airtable/retrieveDecisionRecord";
 import { updateRecord } from "src/server/airtable/updateRecord";
 
-const table = "v2: Searcher <> Applicant";
+const table = "v2: Searcher <> Candidate";
 
 
 export type Decision = "YES" | "NO" | "UNDECIDED";
