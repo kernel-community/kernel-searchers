@@ -2,10 +2,10 @@ import Airtable from "airtable";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
 const baseId = "appYaT73RTzmoKIrq";
-const table = "v2: Searcher <> Applicant";
+const table = "v2: Applications";
 const base = airtable.base(baseId);
 
-export const retrieveApplication = async (id: string) => {
+export const retrieveRecord = async (id: string) => {
   let application;
   try {
     application = await base(table).find(id);

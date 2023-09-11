@@ -4,21 +4,21 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 type Application = Record<FieldSet>;
-export const useRetrieveApplication = ({applicationId}: {applicationId: string | undefined}) => {
+export const useRetrieveRecord = ({id}: {id: string | undefined}) => {
   const [application, setApplication] = useState<Application>();
   const { isDisconnected, address } = useAccount();
 
   const{ isError, isLoading: loading } = useQuery(
-    [`application-${applicationId}`],
+    [`application-${id}`],
     async () => {
-      const res = await axios.post<{ ok: boolean, data: {application: Record<FieldSet>} }>(`/api/getApplicationRecord`, { applicationId }, {
+      const res = await axios.post<{ ok: boolean, data: {application: Record<FieldSet>} }>(`/api/getRecord`, { id }, {
         headers: { "Content-Type": "application/json" },
       })
       setApplication(res.data.data.application);
       return res;
     },
     {
-      enabled: !isDisconnected && !!(address) && !!(applicationId),
+      enabled: !isDisconnected && !!(address) && !!(id),
       notifyOnChangeProps: ["data"]
     }
   );
