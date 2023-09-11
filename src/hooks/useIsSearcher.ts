@@ -15,9 +15,8 @@ export const useIsSearcher = () => {
   useQuery(
     [`user-searcher`],
     async () => {
-      await axios.post<{ ok: boolean, data: { isSearcher: boolean } }>(`/api/isWalletSearcher`, {
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({address})
+      await axios.post<{ ok: boolean, data: { isSearcher: boolean } }>(`/api/isWalletSearcher`, {address}, {
+        headers: { "Content-Type": "application/json" }
       })
       .then((v) => {
         const isSearcher = v.data.data.isSearcher;
