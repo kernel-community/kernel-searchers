@@ -24,13 +24,12 @@ const Branding = () => {
   )
 }
 export default function Navbar () {
-  const {weekText} = useCurrentWeek();
+  const {weekText, start} = useCurrentWeek();
   return (
     <div className="navbar flex flex-row justify-between shadow-lg">
     <Branding />
-    <div>{weekText}</div>
+    <div>{`Searching started on ${start.toFormat('DD')}; `}{weekText}</div>
     <RetroConnectKitButton />
-    {/* <ThemeChanger /> */}
   </div>
   )
 }

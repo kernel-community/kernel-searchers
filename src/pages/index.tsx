@@ -1,15 +1,22 @@
 import Main from "src/layout/Main";
 import type { GetServerSideProps } from "next";
 import { siweServer } from "src/server/utils/siweServer";
-import walletIsSearcher from "src/server/utils/walletIsSearcher";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
-import useCurrentWeek from "src/hooks/useCurrentWeek";
+import { URL } from "src/server/utils/myUrl";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { address } = await siweServer.getSession(req, res);
-  const isSearcher = !!(address) && (await walletIsSearcher(address));
-  return { props: { isSearcher } };
+  const response = await fetch(
+    `${URL}/api/isWalletSearcher`,
+    {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({ address })
+    }
+  );
+  const data = await response.json() as { data: {isSearcher: boolean }};
+  return { props: { isSearcher: data.data.isSearcher } };
 };
 
 export default function Home({ isSearcher }: { isSearcher: boolean }) {
@@ -26,7 +33,6 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
       return setSubtitle("You are not a searcher");
     }
   },[isDisconnected, address, isSearcher])
-  const {start} = useCurrentWeek();
   return (
     <Main>
       <h1 className="tracking-tight text-[3rem]">
@@ -34,9 +40,6 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
       </h1>
       <div>
         {subtitle}
-      </div>
-      <div>
-        {`Searching started on ${start.toFormat('DD')}`}
       </div>
     </Main>
   );

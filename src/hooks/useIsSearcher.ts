@@ -15,19 +15,13 @@ export const useIsSearcher = () => {
   useQuery(
     [`user-searcher`],
     async () => {
-      await axios.post<{ ok: boolean, data: { addresses: string[] } }>(`/api/airtable/allSearchers`, {
-        headers: { "Content-Type": "application/json" }
+      await axios.post<{ ok: boolean, data: { isSearcher: boolean } }>(`/api/isWalletSearcher`, {
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({address})
       })
       .then((v) => {
-        if (v.data && v.data.data.addresses.length > 0) {
-          const allSearchers = v.data.data.addresses;
-          const found = allSearchers.find(searcher => searcher.toLowerCase() === address?.toLowerCase())
-          if (found) {
-            return setIsSearcher(true);
-          }
-          return setIsSearcher(false);
-        }
-        setIsSearcher(false);
+        const isSearcher = v.data.data.isSearcher;
+        setIsSearcher(isSearcher);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));

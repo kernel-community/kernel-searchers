@@ -1,16 +1,14 @@
-// get all searchers from airtable
 import Airtable from "airtable";
-import { type NextApiRequest, type NextApiResponse } from "next";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
 const baseId = "appYaT73RTzmoKIrq";
 const table = "v2: Searchers";
-const view = "Grid view";
+// make sure this view is filtered for wallets = not null
+const view = "[don't edit] With Wallets";
 const addressColumn = "wallet"
-
 const base = airtable.base(baseId);
 
-const allSearchers = async (req: NextApiRequest, res: NextApiResponse) => {
+export const allSearchers = async () => {
   const addresses: string[] = [];
   try {
     await base(table).select({ view }).eachPage((records, next) => {
@@ -19,14 +17,7 @@ const allSearchers = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   } catch(error) {
     console.error(error);
-    res.status(500).json({
-      ok: false,
-      error
-    })
+    throw error;
   }
-
-  res.status(200).json({ ok: true, data: { addresses } });
+  return addresses;
 }
-
-export default allSearchers;
-
