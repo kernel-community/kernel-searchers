@@ -104,13 +104,11 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
 
   return (
     <Main isSearcher={isSearcher}>
-      <div>
+      {/* <div>
         Viewing: {applicantIndex}/{totalApplicants}
       </div>
       <div className="my-3 w-3/5 h-96 overflow-auto">
-        {
-          JSON.stringify(application?._rawJson)
-        }
+        {JSON.stringify(application?._rawJson)}
       </div>
       <SubmitDecisionSection
         setDecision={setDecision}
@@ -120,7 +118,17 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
       <ApplicationNavigation
         prev={prevApplicantIndex}
         next={nextApplicantIndex}
-      />
+      /> */}
+      <div className="grid grid-cols-3 h-full">
+        <div className="bg-primary overflow-y-auto">
+        {/* list of all applicants */}
+        {/* names */}
+        {/* searcher's decision */}
+        </div>
+        <div className="bg-secondary col-span-2 overflow-y-scroll">
+          {/* selected applicant's profile */}
+        </div>
+      </div>
     </Main>
   );
 }
