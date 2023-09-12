@@ -6,7 +6,7 @@ export default function Main ({
   isSearcher,
   children
 }: {
-  isSearcher: boolean,
+  isSearcher?: boolean,
   children: ReactNode
 }) {
   return (

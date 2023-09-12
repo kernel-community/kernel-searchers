@@ -25,7 +25,7 @@ const Branding = () => {
     </div>
   )
 }
-export default function Navbar ({isSearcher}: {isSearcher: boolean}) {
+export default function Navbar ({isSearcher}: {isSearcher?: boolean}) {
   const {weekText, start} = useCurrentWeek();
   const {address, isDisconnected} = useAccount();
   const [subtitle, setSubtitle] = useState<string>("");
@@ -47,9 +47,7 @@ export default function Navbar ({isSearcher}: {isSearcher: boolean}) {
     <div className="navbar flex flex-row justify-between shadow-lg">
       <Branding />
       <div>{`Searching started on ${start.toFormat('DD')}; `}{weekText}</div>
-      <div>
-        {subtitle}
-      </div>
+      <div>{subtitle}</div>
       <RetroConnectKitButton />
     </div>
   )
