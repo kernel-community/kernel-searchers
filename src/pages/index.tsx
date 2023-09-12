@@ -2,8 +2,7 @@
 import Main from "src/layout/Main";
 import type { GetServerSideProps } from "next";
 import { siweServer } from "src/server/utils/siweServer";
-import { useAccount } from "wagmi";
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { URL } from "src/server/utils/myUrl";
 import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
@@ -24,27 +23,64 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   return { props: { isSearcher: data.data.isSearcher } };
 };
 
+const SubmitDecisionSection = ({
+  setDecision,
+  submitDecision,
+  decision
+}: {
+  setDecision: Dispatch<SetStateAction<Decision>>;
+  submitDecision: () => Promise<void>;
+  decision: string
+}) => {
+  return (
+    <div>
+      <div className="flex flex-row gap-3 my-8">
+        <label htmlFor="yes">
+          Yes
+          <input type="radio" name="decision" id="yes" onChange={() => setDecision("YES")} />
+        </label>
+        <label htmlFor="no">
+          No
+          <input type="radio" name="decision" id="no" onChange={() => setDecision("NO")} />
+        </label>
+        <label htmlFor="undecided">
+          undecided
+          <input type="radio" name="decision" id="undecided" onChange={() => setDecision("UNDECIDED")} />
+        </label>
+        <RetroButton type="button" onClick={() => submitDecision()}>Submit</RetroButton>
+      </div>
+      <div>
+        Your Decision: {decision}
+      </div>
+    </div>
+  )
+}
+
+const ApplicationNavigation = ({
+  prev,
+  next
+}: {
+  prev: () => void;
+  next: () => void;
+}) => {
+  return (
+    <div className="flex flex-row gap-3 my-8">
+    <RetroButton type="button" onClick={() => prev()}>PREV</RetroButton>
+    <RetroButton type="button" onClick={() => next()}>NEXT</RetroButton>
+  </div>
+  )
+}
+
 export default function Home({ isSearcher }: { isSearcher: boolean }) {
-  const {address, isDisconnected} = useAccount();
-
   const [decision, setDecision] = useState<Decision>("UNDECIDED");
-
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
-  const [subtitle, setSubtitle] = useState<string>("");
   const { applicants } = useSearcherApplications();
   const currentApplicationId = applicants[applicantIndex];
-
   const { applicationDecisionId, updateDecision } = useApplicationDecision({ applicationId: currentApplicationId, decision });
-
   const currentApplicationDecisionId = applicationDecisionId ? applicationDecisionId[0]: undefined;
-
   const { application } = useRetrieveRecord({ id: currentApplicationId });
-
   const { application: decisionRecord } = useRetrieveRecord({ id: currentApplicationDecisionId });
-
   const applicationDecision = decisionRecord?.fields.DECISION;
-
-
   const totalApplicants = applicants.length - 1;
 
   const nextApplicantIndex = () => setApplicantIndex((curr) =>  {
@@ -61,30 +97,13 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
     return --curr;
   })
 
-  const acceptCurrentApplication = async () => {
+  const submitDecision = async () => {
     const response = await updateDecision()
     console.log({response});
   }
 
-  useEffect(() => {
-    if (isDisconnected) {
-      return setSubtitle("Login")
-    }
-    if (address && isSearcher) {
-      return setSubtitle("You are a searcher")
-    }
-    if (address && !isSearcher) {
-      return setSubtitle("You are not a searcher");
-    }
-  },[isDisconnected, address, isSearcher])
   return (
-    <Main>
-      <h1 className="tracking-tight text-[3rem]">
-        Kernel Searcher&apos;s App
-      </h1>
-      <div>
-        {subtitle}
-      </div>
+    <Main isSearcher={isSearcher}>
       <div>
         Viewing: {applicantIndex}/{totalApplicants}
       </div>
@@ -93,28 +112,15 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
           JSON.stringify(application?._rawJson)
         }
       </div>
-      <div className="flex flex-row gap-3 my-8">
-        <label htmlFor="yes">
-          Yes
-          <input type="radio" name="decision" id="yes" onChange={() => setDecision("YES")} />
-        </label>
-        <label htmlFor="no">
-          No
-          <input type="radio" name="decision" id="no" onChange={() => setDecision("NO")} />
-        </label>
-        <label htmlFor="undecided">
-          undecided
-          <input type="radio" name="decision" id="undecided" onChange={() => setDecision("UNDECIDED")} />
-        </label>
-        <RetroButton type="button" onClick={() => acceptCurrentApplication()}>Submit</RetroButton>
-      </div>
-      <div>
-        Your Decision: {JSON.stringify(applicationDecision)}
-      </div>
-      <div className="flex flex-row gap-3 my-8">
-        <RetroButton type="button" onClick={() => prevApplicantIndex()}>PREV</RetroButton>
-        <RetroButton type="button" onClick={() => nextApplicantIndex()}>NEXT</RetroButton>
-      </div>
+      <SubmitDecisionSection
+        setDecision={setDecision}
+        submitDecision={submitDecision}
+        decision={JSON.stringify(applicationDecision)}
+      />
+      <ApplicationNavigation
+        prev={prevApplicantIndex}
+        next={nextApplicantIndex}
+      />
     </Main>
   );
 }
