@@ -70,12 +70,11 @@ const ApplicationNavigation = ({
   </div>
   )
 }
-
 export default function Home({ isSearcher }: { isSearcher: boolean }) {
   const [decision, setDecision] = useState<Decision>("UNDECIDED");
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
   const { applicants } = useSearcherApplications();
-  const currentApplicationId = applicants[applicantIndex];
+  const currentApplicationId = applicants[applicantIndex]?.id;
   const { applicationDecisionId, updateDecision } = useApplicationDecision({ applicationId: currentApplicationId, decision });
   const currentApplicationDecisionId = applicationDecisionId ? applicationDecisionId[0]: undefined;
   const { application } = useRetrieveRecord({ id: currentApplicationId });
@@ -122,11 +121,39 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
       <div className="grid grid-cols-3 h-full">
         <div className="bg-primary overflow-y-auto">
         {/* list of all applicants */}
-        {/* names */}
+        <div>
+          {applicants.map((applicant, key) => {
+            return (
+              <div key={key}
+                className={
+                  `
+                    py-12
+                    px-2
+                    border-black
+                    border-b-2
+                    cursor-pointer
+                    ${applicantIndex === key ? `bg-accent` : ``}
+                  `
+                }
+                onClick={() => setApplicantIndex(key)}
+              >
+                <div>
+                  {applicant.name}
+                </div>
+                <div>
+                  {applicant.searcherDecision}
+                </div>
+              </div>
+            )
+          })}
+        </div>
         {/* searcher's decision */}
         </div>
         <div className="bg-secondary col-span-2 overflow-y-scroll">
           {/* selected applicant's profile */}
+          {
+            JSON.stringify(application?._rawJson)
+          }
         </div>
       </div>
     </Main>

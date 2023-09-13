@@ -4,7 +4,8 @@ export const EXPRESSIONS_TABLE = {
   columns: {
     name: "Name",
     email: "Email",
-    recordId: "Record ID"
+    recordId: "Record ID",
+    decision: "DECISION"
   }
 }
 

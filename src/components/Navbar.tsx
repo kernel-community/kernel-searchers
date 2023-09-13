@@ -28,11 +28,11 @@ const Branding = () => {
 export default function Navbar ({isSearcher}: {isSearcher?: boolean}) {
   const {weekText, start} = useCurrentWeek();
   const {address, isDisconnected} = useAccount();
-  const [subtitle, setSubtitle] = useState<string>("");
+  const [subtitle, setSubtitle] = useState<string>();
 
   useEffect(() => {
     if (isDisconnected) {
-      return setSubtitle("Login")
+      return setSubtitle(undefined)
     }
     if (address && isSearcher) {
       return setSubtitle("You are a searcher")
@@ -47,7 +47,7 @@ export default function Navbar ({isSearcher}: {isSearcher?: boolean}) {
     <div className="navbar flex flex-row justify-between shadow-lg">
       <Branding />
       <div>{`Searching started on ${start.toFormat('DD')}; `}{weekText}</div>
-      <div>{subtitle}</div>
+      {subtitle && <div>{subtitle}</div>}
       <RetroConnectKitButton />
     </div>
   )

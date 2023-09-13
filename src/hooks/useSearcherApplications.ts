@@ -6,8 +6,14 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 
+type Applicant = {
+  id: string;
+  name: string;
+  searcherDecision: string;
+}
+
 export const useSearcherApplications = () => {
-  const [applicants, setApplicants] = useState<string[]>([]);
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const { isDisconnected, address } = useAccount();
@@ -15,7 +21,9 @@ export const useSearcherApplications = () => {
   useQuery(
     [`user-searcher-applications`],
     async () => {
-      await axios.post<{ ok: boolean, data: {applicants: string[]} }>(`/api/searcherApplications`, { address }, {
+      await axios.post<{ ok: boolean, data: {
+        applicants: Applicant[]
+      } }>(`/api/searcherApplications`, { address }, {
         headers: { "Content-Type": "application/json" },
       })
       .then((v) => {
