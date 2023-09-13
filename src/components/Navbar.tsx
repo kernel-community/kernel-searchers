@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Searcher } from "src/@types";
+import { type Searcher } from "src/@types";
 import {RetroConnectKitButton} from "src/components/RetroButton";
 import useCurrentWeek from "src/hooks/useCurrentWeek";
 import { useAccount } from "wagmi";
@@ -45,9 +45,12 @@ export default function Navbar ({isSearcher, searcher}: {isSearcher?: boolean, s
 
 
   return (
-    <div className="navbar flex flex-row justify-between shadow-lg">
+    <div className="navbar flex flex-row justify-between shadow-xl">
       <Branding />
-      <div>{`Searching started on ${start.toFormat('DD')}; `}{weekText}</div>
+      <div className="flex flex-col">
+        <div>{`Searching started on ${start.toFormat('DD')}; `}</div>
+        <div>{weekText}</div>
+      </div>
       <div>
         <div>{subtitle}</div>
         <RetroConnectKitButton />

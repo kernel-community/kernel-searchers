@@ -7,7 +7,7 @@ import { URL } from "src/server/utils/myUrl";
 import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
 import RetroButton from "src/components/RetroButton";
-import { type Decision, useApplicationDecision, DECISIONS } from "src/hooks/useApplicationDecision";
+import { type Decision, useApplicationDecision, DECISIONS, DecisionToString } from "src/hooks/useApplicationDecision";
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 import { type Searcher } from "src/@types";
 
@@ -26,30 +26,18 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 };
 
 const SubmitDecisionSection = ({
-  setDecision,
   submitDecision,
   decision
 }: {
-  setDecision: Dispatch<SetStateAction<Decision>>;
-  submitDecision: () => Promise<void>;
-  decision?: string
+  submitDecision: (decision: Decision) => Promise<unknown>;
+  decision?: string;
 }) => {
   return (
     <div>
       <div className="flex flex-row gap-3 my-8">
-        <label htmlFor="yes">
-          {DECISIONS.yes.label}
-          <input type="radio" name="decision" id="yes" onChange={() => setDecision(DECISIONS.yes)} />
-        </label>
-        <label htmlFor="no">
-          {DECISIONS.no.label}
-          <input type="radio" name="decision" id="no" onChange={() => setDecision(DECISIONS.no)} />
-        </label>
-        <label htmlFor="undecided">
-          {DECISIONS.undecided.label}
-          <input type="radio" name="decision" id="undecided" onChange={() => setDecision(DECISIONS.undecided)} />
-        </label>
-        <RetroButton type="button" onClick={() => submitDecision()}>Submit</RetroButton>
+        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>YES</RetroButton>
+        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>NO</RetroButton>
+        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.undecided)}>Remove</RetroButton>
       </div>
       {decision && <div>
         Your Decision: {decision}
@@ -66,7 +54,7 @@ const ApplicationNavigation = ({
   next: () => void;
 }) => {
   return (
-    <div className="flex flex-row gap-3 my-8">
+    <div className="flex flex-row gap-3 my-8 justify-between">
     <RetroButton type="button" onClick={() => prev()}>PREV</RetroButton>
     <RetroButton type="button" onClick={() => next()}>NEXT</RetroButton>
   </div>
@@ -78,15 +66,14 @@ type ApplicationQuestion = (keyof typeof ApplicationColumns);
 
 
 export default function Home({ isSearcher, searcher }: { isSearcher: boolean, searcher: Searcher }) {
-  const [decision, setDecision] = useState<Decision>(DECISIONS.undecided);
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
   const { applicants } = useSearcherApplications();
   const currentApplicationId = applicants[applicantIndex]?.id;
-  const { applicationDecisionId, updateDecision } = useApplicationDecision({ applicationId: currentApplicationId, decision });
+  const { applicationDecisionId, updateDecision } = useApplicationDecision({ applicationId: currentApplicationId });
   const currentApplicationDecisionId = applicationDecisionId ? applicationDecisionId[0]: undefined;
   const { application } = useRetrieveRecord({ id: currentApplicationId });
   const { application: decisionRecord } = useRetrieveRecord({ id: currentApplicationDecisionId });
-  const applicationDecision = decisionRecord?.fields.DECISION;
+  const applicationDecision = decisionRecord?.fields.DECISION as Decision["value"];
   const totalApplicants = applicants.length - 1;
 
   const nextApplicantIndex = () => setApplicantIndex((curr) =>  {
@@ -103,10 +90,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
     return --curr;
   })
 
-  const submitDecision = async () => {
-    const response = await updateDecision()
-    console.log({response});
-  }
+  const submitDecision = async (decision: Decision) => updateDecision(decision);
 
   const [expandQuestion, setExpandQuestion] = useState<ApplicationQuestion | undefined>("name");
 
@@ -123,16 +107,6 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
 
   return (
     <Main isSearcher={isSearcher} searcher={searcher}>
-      {/* <div>
-        Viewing: {applicantIndex}/{totalApplicants}
-      </div>
-      <div className="my-3 w-3/5 h-96 overflow-auto">
-        {JSON.stringify(application?._rawJson)}
-      </div>
-      <ApplicationNavigation
-        prev={prevApplicantIndex}
-        next={nextApplicantIndex}
-      /> */}
       <div className="grid grid-cols-3 h-full">
         <div className="bg-primary overflow-y-auto">
         {/* list of all applicants */}
@@ -144,10 +118,10 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                   `
                     py-12
                     px-2
-                    border-black
+                    border-primary-content
                     border-b-2
                     cursor-pointer
-                    ${applicantIndex === key ? `bg-accent` : ``}
+                    ${applicantIndex === key ? `bg-primary-focus` : ``}
                   `
                 }
                 onClick={() => setApplicantIndex(key)}
@@ -156,18 +130,20 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                   {applicant.name}
                 </div>
                 <div>
-                  {applicant.searcherDecision}
+                  Your Decision: {applicant.searcherDecision}
+                </div>
+                <div>
                 </div>
               </div>
             )
           })}
         </div>
         </div>
-        <div className="bg-secondary col-span-2 overflow-y-scroll">
+        <div className="bg-base-200 col-span-2 overflow-y-scroll">
           {
             AllApplicationColumns.map((question, key) => {
               return (
-                <div className="collapse collapse-plus bg-base-200" key={key}>
+                <div className="collapse collapse-plus rounded-none border-b-2 border-primary-content" key={key}>
                   <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} readOnly />
                   <div className="collapse-title text-xl font-medium">
                     {ApplicationColumns[question as ApplicationQuestion].label}
@@ -180,9 +156,14 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
             })
           }
           <SubmitDecisionSection
-            setDecision={setDecision}
             submitDecision={submitDecision}
-            decision={applicationDecision?.toString()}
+            decision={DecisionToString[applicationDecision]}
+          />
+        </div>
+        <div className="col-span-3 px-6 shadow-xl">
+          <ApplicationNavigation
+            prev={prevApplicantIndex}
+            next={nextApplicantIndex}
           />
         </div>
       </div>
