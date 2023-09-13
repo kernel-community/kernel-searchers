@@ -1,12 +1,15 @@
 import { type ReactNode } from "react";
 import Head from "next/head";
 import Navbar from "src/components/Navbar";
+import { type Searcher } from "src/@types";
 
 export default function Main ({
   isSearcher,
+  searcher,
   children
 }: {
   isSearcher?: boolean,
+  searcher?: Searcher,
   children: ReactNode
 }) {
   return (
@@ -17,7 +20,7 @@ export default function Main ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-col h-screen">
-        <Navbar isSearcher={isSearcher} />
+        <Navbar isSearcher={isSearcher} searcher={searcher} />
         <div className="grow h-4/5">
           {children}
         </div>

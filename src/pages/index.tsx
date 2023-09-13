@@ -9,6 +9,7 @@ import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
 import RetroButton from "src/components/RetroButton";
 import { type Decision, useApplicationDecision, DECISIONS } from "src/hooks/useApplicationDecision";
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
+import { type Searcher } from "src/@types";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { address } = await siweServer.getSession(req, res);
@@ -20,8 +21,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       body: JSON.stringify({ address })
     }
   );
-  const data = await response.json() as { data: {isSearcher: boolean }};
-  return { props: { isSearcher: data.data.isSearcher } };
+  const data = await response.json() as { data: {isSearcher: boolean, searcher: Searcher }};
+  return { props: { isSearcher: data.data.isSearcher, searcher: data.data.searcher } };
 };
 
 const SubmitDecisionSection = ({
@@ -76,7 +77,7 @@ const AllApplicationColumns = Object.keys(ApplicationColumns);
 type ApplicationQuestion = (keyof typeof ApplicationColumns);
 
 
-export default function Home({ isSearcher }: { isSearcher: boolean }) {
+export default function Home({ isSearcher, searcher }: { isSearcher: boolean, searcher: Searcher }) {
   const [decision, setDecision] = useState<Decision>(DECISIONS.undecided);
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
   const { applicants } = useSearcherApplications();
@@ -121,7 +122,7 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
   const getApplicationField = (field: ApplicationQuestion) => application?.fields[ApplicationColumns[field].default]?.toString()
 
   return (
-    <Main isSearcher={isSearcher}>
+    <Main isSearcher={isSearcher} searcher={searcher}>
       {/* <div>
         Viewing: {applicantIndex}/{totalApplicants}
       </div>

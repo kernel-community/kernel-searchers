@@ -1,7 +1,11 @@
+import { type Searcher } from "src/@types";
 import { allSearchers } from "../airtable/allSearchers";
 
-const isInSearcherList = async (wallet: string) => {
-  let addresses: string[] = [];
+const isInSearcherList = async (wallet: string): Promise<{
+  isSearcher: boolean,
+  searcher?: Searcher
+}> => {
+  let addresses: Searcher[] = [];
   try {
     addresses = await allSearchers();
   } catch(error) {
@@ -9,9 +13,18 @@ const isInSearcherList = async (wallet: string) => {
     throw error;
   }
   if (wallet) {
-    const found = !!(addresses.find(searcher => searcher.toLowerCase() === wallet.toLowerCase()));
-    return found;
+    const found = addresses.find(searcher => searcher.wallet.toLowerCase() === wallet.toLowerCase());
+    return {
+      isSearcher: !!found,
+      searcher: {
+        wallet,
+        name: found?.name ?? ""
+      }
+    };
   }
-  else return false;
+  else return {
+    isSearcher: false,
+    searcher: undefined
+  };
 }
 export default isInSearcherList;

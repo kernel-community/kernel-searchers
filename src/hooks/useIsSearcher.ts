@@ -4,10 +4,12 @@
 import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { type Searcher } from "src/@types";
 import { useAccount } from "wagmi";
 
 export const useIsSearcher = () => {
   const [isSearcher, setIsSearcher] = useState<boolean>(false);
+  const [searcher, setSearcher] = useState<Searcher>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const { isDisconnected, address } = useAccount();
@@ -15,12 +17,14 @@ export const useIsSearcher = () => {
   useQuery(
     [`user-searcher`],
     async () => {
-      await axios.post<{ ok: boolean, data: { isSearcher: boolean } }>(`/api/isWalletSearcher`, {address}, {
+      await axios.post<{ ok: boolean, data: { isSearcher: boolean, searcher: Searcher } }>(`/api/isWalletSearcher`, {address}, {
         headers: { "Content-Type": "application/json" }
       })
       .then((v) => {
         const isSearcher = v.data.data.isSearcher;
+        const searcherFromResponse = v.data.data.searcher;
         setIsSearcher(isSearcher);
+        setSearcher(searcherFromResponse)
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
@@ -30,6 +34,6 @@ export const useIsSearcher = () => {
     }
   );
 
-  return { isSearcher, loading, error }
+  return { isSearcher, loading, error, searcher }
 }
 

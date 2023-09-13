@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Searcher } from "src/@types";
 import {RetroConnectKitButton} from "src/components/RetroButton";
 import useCurrentWeek from "src/hooks/useCurrentWeek";
 import { useAccount } from "wagmi";
@@ -25,7 +26,7 @@ const Branding = () => {
     </div>
   )
 }
-export default function Navbar ({isSearcher}: {isSearcher?: boolean}) {
+export default function Navbar ({isSearcher, searcher}: {isSearcher?: boolean, searcher?: Searcher}) {
   const {weekText, start} = useCurrentWeek();
   const {address, isDisconnected} = useAccount();
   const [subtitle, setSubtitle] = useState<string>();
@@ -35,20 +36,22 @@ export default function Navbar ({isSearcher}: {isSearcher?: boolean}) {
       return setSubtitle(undefined)
     }
     if (address && isSearcher) {
-      return setSubtitle("You are a searcher")
+      return setSubtitle(`${searcher?.name.substring(0, 15).trim()}${searcher?.name.length && searcher.name.length > 15 ? "..." : ""}`)
     }
     if (address && !isSearcher) {
       return setSubtitle("You are not a searcher");
     }
-  },[isDisconnected, address, isSearcher])
+  },[isDisconnected, address, isSearcher, searcher?.name])
 
 
   return (
     <div className="navbar flex flex-row justify-between shadow-lg">
       <Branding />
       <div>{`Searching started on ${start.toFormat('DD')}; `}{weekText}</div>
-      {subtitle && <div>{subtitle}</div>}
-      <RetroConnectKitButton />
+      <div>
+        <div>{subtitle}</div>
+        <RetroConnectKitButton />
+      </div>
     </div>
   )
 }

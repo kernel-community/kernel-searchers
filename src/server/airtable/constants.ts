@@ -76,7 +76,8 @@ export const SEARCHERS_TABLE = {
     wallet: "[don't edit] With Wallets"
   },
   columns: {
-    address: "wallet"
+    address: "wallet",
+    name: "Name"
   }
 }
 
