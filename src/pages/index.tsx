@@ -7,7 +7,7 @@ import { URL } from "src/server/utils/myUrl";
 import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
 import RetroButton from "src/components/RetroButton";
-import { type Decision, useApplicationDecision } from "src/hooks/useApplicationDecision";
+import { type Decision, useApplicationDecision, DECISIONS } from "src/hooks/useApplicationDecision";
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -31,28 +31,28 @@ const SubmitDecisionSection = ({
 }: {
   setDecision: Dispatch<SetStateAction<Decision>>;
   submitDecision: () => Promise<void>;
-  decision: string
+  decision?: string
 }) => {
   return (
     <div>
       <div className="flex flex-row gap-3 my-8">
         <label htmlFor="yes">
-          Yes
-          <input type="radio" name="decision" id="yes" onChange={() => setDecision("YES")} />
+          {DECISIONS.yes.label}
+          <input type="radio" name="decision" id="yes" onChange={() => setDecision(DECISIONS.yes)} />
         </label>
         <label htmlFor="no">
-          No
-          <input type="radio" name="decision" id="no" onChange={() => setDecision("NO")} />
+          {DECISIONS.no.label}
+          <input type="radio" name="decision" id="no" onChange={() => setDecision(DECISIONS.no)} />
         </label>
         <label htmlFor="undecided">
-          undecided
-          <input type="radio" name="decision" id="undecided" onChange={() => setDecision("UNDECIDED")} />
+          {DECISIONS.undecided.label}
+          <input type="radio" name="decision" id="undecided" onChange={() => setDecision(DECISIONS.undecided)} />
         </label>
         <RetroButton type="button" onClick={() => submitDecision()}>Submit</RetroButton>
       </div>
-      <div>
+      {decision && <div>
         Your Decision: {decision}
-      </div>
+      </div>}
     </div>
   )
 }
@@ -77,7 +77,7 @@ type ApplicationQuestion = (keyof typeof ApplicationColumns);
 
 
 export default function Home({ isSearcher }: { isSearcher: boolean }) {
-  const [decision, setDecision] = useState<Decision>("UNDECIDED");
+  const [decision, setDecision] = useState<Decision>(DECISIONS.undecided);
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
   const { applicants } = useSearcherApplications();
   const currentApplicationId = applicants[applicantIndex]?.id;
@@ -167,7 +167,7 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
             AllApplicationColumns.map((question, key) => {
               return (
                 <div className="collapse collapse-plus bg-base-200" key={key}>
-                  <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} />
+                  <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} readOnly />
                   <div className="collapse-title text-xl font-medium">
                     {ApplicationColumns[question as ApplicationQuestion].label}
                   </div>
@@ -181,7 +181,7 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
           <SubmitDecisionSection
             setDecision={setDecision}
             submitDecision={submitDecision}
-            decision={JSON.stringify(applicationDecision)}
+            decision={applicationDecision?.toString()}
           />
         </div>
       </div>

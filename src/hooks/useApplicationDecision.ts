@@ -2,7 +2,25 @@ import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
-export type Decision = "YES" | "NO" | "UNDECIDED";
+export type Decision = {
+  value: "YES" | "NO" | "UNDECIDED",
+  label: string;
+};
+
+export const DECISIONS = {
+  "yes": {
+    value: "YES" as Decision["value"],
+    label: "✅"
+  },
+  "no": {
+    value: "NO" as Decision["value"],
+    label: "❌"
+  },
+  "undecided": {
+    value: "UNDECIDED" as Decision["value"],
+    label: "Remove decision"
+  }
+}
 
 export const useApplicationDecision = ({
   applicationId,
@@ -36,7 +54,7 @@ export const useApplicationDecision = ({
   } = useQuery(
     [`decision-${address}-${applicationId}`],
     async () => {
-      const res = await axios.post<{ ok: boolean, data: {response: string[]} }>(`/api/updateApplicationDecision`, { address, applicationId, decision }, {
+      const res = await axios.post<{ ok: boolean, data: {response: string[]} }>(`/api/updateApplicationDecision`, { address, applicationId, decision: decision?.value }, {
         headers: { "Content-Type": "application/json" },
       })
       return res;
