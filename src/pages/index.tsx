@@ -8,6 +8,7 @@ import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
 import RetroButton from "src/components/RetroButton";
 import { type Decision, useApplicationDecision } from "src/hooks/useApplicationDecision";
+import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { address } = await siweServer.getSession(req, res);
@@ -70,6 +71,11 @@ const ApplicationNavigation = ({
   </div>
   )
 }
+const ApplicationColumns = EXPRESSIONS_TABLE.columns.application;
+const AllApplicationColumns = Object.keys(ApplicationColumns);
+type ApplicationQuestion = (keyof typeof ApplicationColumns);
+
+
 export default function Home({ isSearcher }: { isSearcher: boolean }) {
   const [decision, setDecision] = useState<Decision>("UNDECIDED");
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
@@ -101,6 +107,19 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
     console.log({response});
   }
 
+  const [expandQuestion, setExpandQuestion] = useState<ApplicationQuestion | undefined>("name");
+
+  const toggleExpandQuestion = (question: ApplicationQuestion) => {
+    setExpandQuestion((ques) => {
+      if (ques === question) {
+        return undefined;
+      }
+      return question;
+    })
+  }
+
+  const getApplicationField = (field: ApplicationQuestion) => application?.fields[ApplicationColumns[field].default]?.toString()
+
   return (
     <Main isSearcher={isSearcher}>
       {/* <div>
@@ -109,11 +128,6 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
       <div className="my-3 w-3/5 h-96 overflow-auto">
         {JSON.stringify(application?._rawJson)}
       </div>
-      <SubmitDecisionSection
-        setDecision={setDecision}
-        submitDecision={submitDecision}
-        decision={JSON.stringify(applicationDecision)}
-      />
       <ApplicationNavigation
         prev={prevApplicantIndex}
         next={nextApplicantIndex}
@@ -147,13 +161,28 @@ export default function Home({ isSearcher }: { isSearcher: boolean }) {
             )
           })}
         </div>
-        {/* searcher's decision */}
         </div>
         <div className="bg-secondary col-span-2 overflow-y-scroll">
-          {/* selected applicant's profile */}
           {
-            JSON.stringify(application?._rawJson)
+            AllApplicationColumns.map((question, key) => {
+              return (
+                <div className="collapse collapse-plus bg-base-200" key={key}>
+                  <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} />
+                  <div className="collapse-title text-xl font-medium">
+                    {ApplicationColumns[question as ApplicationQuestion].label}
+                  </div>
+                  <div className="collapse-content">
+                    <p>{getApplicationField(question as ApplicationQuestion)}</p>
+                  </div>
+              </div>
+              )
+            })
           }
+          <SubmitDecisionSection
+            setDecision={setDecision}
+            submitDecision={submitDecision}
+            decision={JSON.stringify(applicationDecision)}
+          />
         </div>
       </div>
     </Main>
