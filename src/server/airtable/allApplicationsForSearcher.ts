@@ -1,5 +1,6 @@
 import Airtable from "airtable";
 import { ASSIGNMENTS_TABLE, BASE_ID } from "./constants";
+import { uniq } from "lodash";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
 const baseId = BASE_ID;
@@ -24,5 +25,5 @@ export const allApplicationsForSearcher = async (address: string): Promise<strin
     console.error(error);
     throw error;
   }
-  return applicants.flat();
+  return uniq(applicants.flat());
 }
