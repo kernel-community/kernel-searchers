@@ -1,10 +1,10 @@
 // get all applications assigned to a searcher
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { pick } from "lodash";
+import { pick, uniqBy } from "lodash";
 import isInSearcherList from "src/server/utils/isInSearcherList";
 import { allApplicationsForSearcher } from "src/server/airtable/allApplicationsForSearcher";
 import { retrieveRecord } from "src/server/airtable/retrieveRecord";
-import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
+import { ASSIGNMENTS_TABLE } from "src/server/airtable/constants";
 
 type Applicant = {
   id: string | undefined;
@@ -20,17 +20,18 @@ const searcherApplications = async (req: NextApiRequest, res: NextApiResponse) =
     return res.status(500).json({ ok: false, data: { message: "is not a searcher" } });
   }
   let applicants: Applicant[] = [];
-  const applicantsIds = await allApplicationsForSearcher(address);
-  const retrievedApplicantRecordPromises = applicantsIds.map(id => retrieveRecord(id));
-  const retrievedApplicants = await Promise.all(retrievedApplicantRecordPromises);
+  const assignmentIds = await allApplicationsForSearcher(address);
+  const retrievedAssignmentRecordPromises = assignmentIds.map(id => retrieveRecord(id));
+  const retrievedAssignment = await Promise.all(retrievedAssignmentRecordPromises);
 
-  applicants = retrievedApplicants.map((applicant) => {
+  applicants = uniqBy(retrievedAssignment.map((applicant) => {
     return {
-      id: applicant.fields[EXPRESSIONS_TABLE.columns.recordId]?.toString(),
-      name: applicant.fields[EXPRESSIONS_TABLE.columns.name]?.toString(),
-      searcherDecision: applicant.fields[EXPRESSIONS_TABLE.columns.decision]?.toString()
+      id: applicant.fields[ASSIGNMENTS_TABLE.columns.applicantRecordId]?.toString(),
+      name: applicant.fields[ASSIGNMENTS_TABLE.columns.applicantName]?.toString(),
+      searcherDecision: applicant.fields[ASSIGNMENTS_TABLE.columns.decision]?.toString()
     }
-  })
+  }), "id");
+
 
   // fetch data for each of these ids
   return res.status(200).json({ ok: true, data: {applicants} });

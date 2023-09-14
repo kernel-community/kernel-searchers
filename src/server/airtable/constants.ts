@@ -16,7 +16,7 @@ export const EXPRESSIONS_TABLE = {
       },
       home:{
         default: "Home",
-        label: "Home"
+        label: "Country"
       },
       gender: {
         default: "Gender",
@@ -93,6 +93,8 @@ export const ASSIGNMENTS_TABLE = {
   columns: {
     address: "Searcher wallet",
     applicantRecordId: "Applicant ID",
-    idColumn: "Record ID"
+    idColumn: "Record ID",
+    applicantName: "Applicant Name",
+    decision: "DECISION"
   }
 }

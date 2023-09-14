@@ -1,6 +1,5 @@
 import Airtable from "airtable";
 import { ASSIGNMENTS_TABLE, BASE_ID } from "./constants";
-import { uniq } from "lodash";
 const airtable = new Airtable({ apiKey: process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN })
 
 const baseId = BASE_ID;
@@ -8,7 +7,7 @@ const table = ASSIGNMENTS_TABLE.tableName;
 // make sure this view is filtered for wallets = not null
 const view = ASSIGNMENTS_TABLE.views.wallet;
 const addressColumn = ASSIGNMENTS_TABLE.columns.address
-const applicantRecordIdColumn = ASSIGNMENTS_TABLE.columns.applicantRecordId
+const idColumn = ASSIGNMENTS_TABLE.columns.idColumn
 const base = airtable.base(baseId);
 
 export const allApplicationsForSearcher = async (address: string): Promise<string[]> => {
@@ -18,12 +17,12 @@ export const allApplicationsForSearcher = async (address: string): Promise<strin
       view,
       filterByFormula: `({${addressColumn}} = '${address}')`
     }).eachPage((records, next) => {
-      records.forEach(record => applicants.push(record.get(applicantRecordIdColumn) as string));
+      records.forEach(record => applicants.push(record.get(idColumn) as string));
       next();
     })
   } catch(error) {
     console.error(error);
     throw error;
   }
-  return uniq(applicants.flat());
+  return applicants.flat();
 }
