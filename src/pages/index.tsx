@@ -34,13 +34,15 @@ const SubmitDecisionSection = ({
 }) => {
   return (
     <div className="px-6 py-6">
-      {decision && <div>
-        Your Decision: {decision}
-      </div>}
       <div className="flex flex-row gap-3 mb-8">
         {!decision && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>}
         {/* <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>{DECISIONS.no.label}</RetroButton> */}
-        {decision && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</RetroButton>}
+        {decision &&
+          <div className="flex flex-row gap-3 items-center">
+            Your Decision: {decision}
+            <button className="btn btn-ghost btn-sm" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</button>
+          </div>
+        }
       </div>
     </div>
   )
@@ -149,8 +151,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                   <div className="collapse-title text-xl font-medium">
                     {ApplicationColumns[question as ApplicationQuestion].label}
                   </div>
-                  <div className="collapse-content">
-                    <p>{getApplicationField(question as ApplicationQuestion)}</p>
+                  <div className="collapse-content min-w-full">
+                    <p className="min-w-full overflow-x-auto">{getApplicationField(question as ApplicationQuestion)}</p>
                   </div>
               </div>
               )

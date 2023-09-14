@@ -18,7 +18,7 @@ export const DECISIONS = {
   },
   "undecided": {
     value: "UNDECIDED" as Decision["value"],
-    label: "Remove decision"
+    label: "Remove decision?"
   }
 }
 
