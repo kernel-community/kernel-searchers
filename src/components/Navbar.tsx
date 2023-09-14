@@ -21,7 +21,7 @@ const Branding = () => {
   return (
     <div className="tracking-tight font-bold cursor-pointer">
       <Link href={"/"}>
-        Kernel Searchers App
+        Kernel Searching Portal
       </Link>
     </div>
   )
