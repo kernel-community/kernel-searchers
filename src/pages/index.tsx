@@ -105,6 +105,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
     })
   }
 
+  const [expandAll, setExpandAll] = useState<boolean>(false);
+
   const getApplicationField = (field: ApplicationQuestion) => application?.fields[ApplicationColumns[field].default]?.toString()
 
   return (
@@ -144,11 +146,25 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
         <div className="bg-base-200 col-span-2 overflow-y-scroll">
           {
             AllApplicationColumns.map((question, key) => {
-              if (!getApplicationField(question as ApplicationQuestion)) return <></>
+              if (!getApplicationField(question as ApplicationQuestion)) return null;
+              if (question as ApplicationQuestion === "name") {
+                return (
+                  <div key={key} className="p-4 flex flex-row justify-between items-center">
+                    <div className="text-[2em] font-medium">{getApplicationField(question as  ApplicationQuestion)}</div>
+                    <div className="flex flex-row gap-3 items-center">
+                      <p className="font-medium">Expand All</p>
+                      <input type="checkbox" className="toggle" checked={expandAll} onChange={() => {setExpandAll((curr) => !curr)}} />
+                    </div>
+                  </div>
+                )
+              }
               return (
-                <div className="collapse collapse-plus rounded-none border-b-2 border-primary-content" key={key}>
+                <div className={`
+                    collapse collapse-plus rounded-none border-b-2 border-primary-content
+                    ${expandAll ? `collapse-open` : ``}
+                  `} key={key}>
                   <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} readOnly />
-                  <div className="collapse-title text-xl font-medium">
+                  <div className="collapse-title text-xl">
                     {ApplicationColumns[question as ApplicationQuestion].label}
                   </div>
                   <div className="collapse-content min-w-full">
