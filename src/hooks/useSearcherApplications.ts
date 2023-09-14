@@ -4,13 +4,9 @@
 import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { type Applicant } from "src/@types";
 import { useAccount } from "wagmi";
 
-type Applicant = {
-  id: string;
-  name: string;
-  searcherDecision: string;
-}
 
 export const useSearcherApplications = () => {
   const [applicants, setApplicants] = useState<Applicant[]>([]);

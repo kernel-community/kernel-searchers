@@ -5,12 +5,7 @@ import isInSearcherList from "src/server/utils/isInSearcherList";
 import { allApplicationsForSearcher } from "src/server/airtable/allApplicationsForSearcher";
 import { retrieveRecord } from "src/server/airtable/retrieveRecord";
 import { ASSIGNMENTS_TABLE } from "src/server/airtable/constants";
-
-type Applicant = {
-  id: string | undefined;
-  name: string | undefined;
-  searcherDecision: string | undefined;
-}
+import { type Applicant } from "src/@types";
 
 
 const searcherApplications = async (req: NextApiRequest, res: NextApiResponse) => {

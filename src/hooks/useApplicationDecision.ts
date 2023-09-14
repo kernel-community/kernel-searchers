@@ -22,10 +22,13 @@ export const DECISIONS = {
   }
 }
 
-export const DecisionToString = {
-  "YES": "Yes",
-  "NO": "No",
-  "UNDECIDED": "Undecided"
+export const getDecision = (decision?: Decision["value"]) => {
+  switch (decision) {
+    case "YES": return "Yes"
+    case "NO": return undefined;
+    case "UNDECIDED": return undefined;
+    default: return undefined;
+  }
 }
 
 export const useApplicationDecision = ({ applicationId }: { applicationId: string | undefined }) => {

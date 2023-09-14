@@ -2,12 +2,12 @@
 import Main from "src/layout/Main";
 import type { GetServerSideProps } from "next";
 import { siweServer } from "src/server/utils/siweServer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { URL } from "src/server/utils/myUrl";
 import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
 import RetroButton from "src/components/RetroButton";
-import { type Decision, useApplicationDecision, DECISIONS, DecisionToString } from "src/hooks/useApplicationDecision";
+import { type Decision, useApplicationDecision, DECISIONS, getDecision } from "src/hooks/useApplicationDecision";
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 import { type Searcher } from "src/@types";
 
@@ -35,9 +35,9 @@ const SubmitDecisionSection = ({
   return (
     <div className="px-6 py-6">
       <div className="flex flex-row gap-3 mb-8">
-        {!decision && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>}
+        {!getDecision(decision as Decision["value"]) && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>}
         {/* <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>{DECISIONS.no.label}</RetroButton> */}
-        {decision &&
+        {getDecision(decision as Decision["value"]) &&
           <div className="flex flex-row gap-3 items-center">
             Your Decision: {decision}
             <button className="btn btn-ghost btn-sm" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</button>
@@ -78,6 +78,22 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
   const applicationDecision = decisionRecord?.fields.DECISION as Decision["value"];
   const totalApplicants = applicants.length - 1;
 
+  const [touched, setTouched] = useState<boolean>(false);
+  const submitDecision = async (decision: Decision) => updateDecision(decision);
+
+  useEffect(() => {
+    // if touched = true
+    // update decision to undecided
+    // do nothing if touched = false
+    if (!touched) return;
+    async function markUndecided() {
+      await submitDecision(DECISIONS.undecided)
+    }
+    void markUndecided();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [touched]);
+
+
   const nextApplicantIndex = () => setApplicantIndex((curr) =>  {
     if (curr === totalApplicants) {
       return 0;
@@ -92,7 +108,6 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
     return --curr;
   })
 
-  const submitDecision = async (decision: Decision) => updateDecision(decision);
 
   const [expandQuestion, setExpandQuestion] = useState<ApplicationQuestion | undefined>("name");
 
@@ -103,9 +118,14 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
       }
       return question;
     })
+    setTouched(true);
   }
 
   const [expandAll, setExpandAll] = useState<boolean>(false);
+  const toggleExpandAllQuestions = () => {
+    setExpandAll((curr) => !curr);
+    setTouched(true);
+  }
 
   const getApplicationField = (field: ApplicationQuestion) => application?.fields[ApplicationColumns[field].default]?.toString()
 
@@ -133,8 +153,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                 <div>
                   {applicant.name}
                 </div>
-                {applicant.searcherDecision && <div>
-                  Your Decision: {applicant.searcherDecision}
+                {getDecision(applicant.searcherDecision as Decision["value"]) && <div>
+                  Your Decision: {getDecision(applicant.searcherDecision as Decision["value"])}
                 </div>}
                 <div>
                 </div>
@@ -153,7 +173,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                     <div className="text-[2em] font-medium">{getApplicationField(question as  ApplicationQuestion)}</div>
                     <div className="flex flex-row gap-3 items-center">
                       <p className="font-medium">Expand All</p>
-                      <input type="checkbox" className="toggle" checked={expandAll} onChange={() => {setExpandAll((curr) => !curr)}} />
+                      <input type="checkbox" className="toggle" checked={expandAll} onChange={() => toggleExpandAllQuestions()} />
                     </div>
                   </div>
                 )
@@ -176,7 +196,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
           }
           <SubmitDecisionSection
             submitDecision={submitDecision}
-            decision={DecisionToString[applicationDecision]}
+            decision={applicationDecision}
           />
         </div>
         <div className="col-span-3 px-6 shadow-xl">
