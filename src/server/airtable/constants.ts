@@ -14,6 +14,10 @@ export const EXPRESSIONS_TABLE = {
         default: "Name",
         label: "Name"
       },
+      home:{
+        default: "Home",
+        label: "Home"
+      },
       gender: {
         default: "Gender",
         label: "Gender"
@@ -22,18 +26,18 @@ export const EXPRESSIONS_TABLE = {
         default: "Self-Described Gender",
         label: "Self Described Gender"
       },
-      race: {
-        default: "Race",
-        label: "Race"
-      },
-      selfDescribedRace: {
-        default: "Self-Described Race",
-        label: "Self Described Race"
-      },
-      kernelScholarship: {
-        default: "Kernel Scholarship",
-        label: "Kernel Scholarship"
-      },
+      // race: {
+      //   default: "Race",
+      //   label: "Race"
+      // },
+      // selfDescribedRace: {
+      //   default: "Self-Described Race",
+      //   label: "Self Described Race"
+      // },
+      // kernelScholarship: {
+      //   default: "Kernel Scholarship",
+      //   label: "Kernel Scholarship"
+      // },
       kernelEnquiry: {
         default: "Kernel Enquiry",
         label: "Kernel Enquiry"

@@ -2,7 +2,7 @@
 import Main from "src/layout/Main";
 import type { GetServerSideProps } from "next";
 import { siweServer } from "src/server/utils/siweServer";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { useState } from "react";
 import { URL } from "src/server/utils/myUrl";
 import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
@@ -33,11 +33,11 @@ const SubmitDecisionSection = ({
   decision?: string;
 }) => {
   return (
-    <div>
+    <div className="px-6 pb-6">
       <div className="flex flex-row gap-3 my-8">
-        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>YES</RetroButton>
-        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>NO</RetroButton>
-        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.undecided)}>Remove</RetroButton>
+        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>
+        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>{DECISIONS.no.label}</RetroButton>
+        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</RetroButton>
       </div>
       {decision && <div>
         Your Decision: {decision}
@@ -142,6 +142,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
         <div className="bg-base-200 col-span-2 overflow-y-scroll">
           {
             AllApplicationColumns.map((question, key) => {
+              if (!getApplicationField(question as ApplicationQuestion)) return <></>
               return (
                 <div className="collapse collapse-plus rounded-none border-b-2 border-primary-content" key={key}>
                   <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} readOnly />
