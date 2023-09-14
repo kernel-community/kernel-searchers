@@ -33,15 +33,15 @@ const SubmitDecisionSection = ({
   decision?: string;
 }) => {
   return (
-    <div className="px-6 pb-6">
-      <div className="flex flex-row gap-3 my-8">
-        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>
-        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>{DECISIONS.no.label}</RetroButton>
-        <RetroButton type="button" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</RetroButton>
-      </div>
+    <div className="px-6 py-6">
       {decision && <div>
         Your Decision: {decision}
       </div>}
+      <div className="flex flex-row gap-3 mb-8">
+        {!decision && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>}
+        {/* <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>{DECISIONS.no.label}</RetroButton> */}
+        {decision && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</RetroButton>}
+      </div>
     </div>
   )
 }
@@ -129,9 +129,9 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                 <div>
                   {applicant.name}
                 </div>
-                <div>
+                {applicant.searcherDecision && <div>
                   Your Decision: {applicant.searcherDecision}
-                </div>
+                </div>}
                 <div>
                 </div>
               </div>
