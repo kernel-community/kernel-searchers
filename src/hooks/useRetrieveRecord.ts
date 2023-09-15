@@ -8,7 +8,7 @@ export const useRetrieveRecord = ({id}: {id: string | undefined}) => {
   const [application, setApplication] = useState<Application>();
   const { isDisconnected, address } = useAccount();
 
-  const{ isError, isLoading: loading } = useQuery(
+  const{ isError, isLoading: loading, refetch: refetchRetrieveRecord } = useQuery(
     [`application-${id}`],
     async () => {
       const res = await axios.post<{ ok: boolean, data: {application: Record<FieldSet>} }>(`/api/getRecord`, { id }, {
@@ -22,6 +22,6 @@ export const useRetrieveRecord = ({id}: {id: string | undefined}) => {
       notifyOnChangeProps: ["data"]
     }
   );
-  return { application, loading, isError }
+  return { application, loading, isError, refetchRetrieveRecord }
 }
 

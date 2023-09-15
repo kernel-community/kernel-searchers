@@ -7,7 +7,7 @@ import { URL } from "src/server/utils/myUrl";
 import { useSearcherApplications } from "src/hooks/useSearcherApplications";
 import { useRetrieveRecord } from "src/hooks/useRetrieveRecord";
 import RetroButton from "src/components/RetroButton";
-import { type Decision, useApplicationDecision, DECISIONS, getDecision } from "src/hooks/useApplicationDecision";
+import { type Decision, useApplicationDecision, DECISIONS, DecisionToString } from "src/hooks/useApplicationDecision";
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 import { type Searcher } from "src/@types";
 
@@ -27,20 +27,42 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
 const SubmitDecisionSection = ({
   submitDecision,
+  isSubmitting,
   decision
 }: {
   submitDecision: (decision: Decision) => Promise<unknown>;
   decision?: string;
+  isSubmitting: boolean;
 }) => {
+  const decisionString = DecisionToString[decision as Decision["value"]]
   return (
     <div className="px-6 py-6">
       <div className="flex flex-row gap-3 mb-8">
-        {!getDecision(decision as Decision["value"]) && <RetroButton type="button" onClick={() => submitDecision(DECISIONS.yes)}>{DECISIONS.yes.label}</RetroButton>}
-        {/* <RetroButton type="button" onClick={() => submitDecision(DECISIONS.no)}>{DECISIONS.no.label}</RetroButton> */}
-        {getDecision(decision as Decision["value"]) &&
+        {/* IF decision hasn't been made / undecided */}
+        {
+          !decisionString &&
+          <RetroButton
+            type="button"
+            onClick={() => submitDecision(DECISIONS.yes)}
+            isLoading={isSubmitting}
+          >
+            {DECISIONS.yes.label}
+          </RetroButton>
+        }
+        {/* IF decision has been made, mark as "undecided" */}
+        {decisionString &&
           <div className="flex flex-row gap-3 items-center">
             Your Decision: {decision}
-            <button className="btn btn-ghost btn-sm" onClick={() => submitDecision(DECISIONS.undecided)}>{DECISIONS.undecided.label}</button>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => submitDecision(DECISIONS.undecided)}
+            >
+              {DECISIONS.undecided.label}
+              {
+                isSubmitting &&
+                <span className="loading loading-spinner loading-xs"></span>
+              }
+            </button>
           </div>
         }
       </div>
@@ -69,24 +91,31 @@ type ApplicationQuestion = (keyof typeof ApplicationColumns);
 
 export default function Home({ isSearcher, searcher }: { isSearcher: boolean, searcher: Searcher }) {
   const [applicantIndex, setApplicantIndex] = useState<number>(0);
-  const { applicants } = useSearcherApplications();
+  const { applicants, refetchSearcherApplications } = useSearcherApplications();
   const currentApplicationId = applicants[applicantIndex]?.id;
-  const { applicationDecisionId, updateDecision } = useApplicationDecision({ applicationId: currentApplicationId });
+  const { applicationDecisionId, updateDecision, isUpdatingDecision, fetchDecision } = useApplicationDecision({ applicationId: currentApplicationId });
   const currentApplicationDecisionId = applicationDecisionId ? applicationDecisionId[0]: undefined;
   const { application } = useRetrieveRecord({ id: currentApplicationId });
-  const { application: decisionRecord } = useRetrieveRecord({ id: currentApplicationDecisionId });
+  const { application: decisionRecord, refetchRetrieveRecord } = useRetrieveRecord({ id: currentApplicationDecisionId });
   const applicationDecision = decisionRecord?.fields.DECISION as Decision["value"];
   const totalApplicants = applicants.length - 1;
 
   const [touched, setTouched] = useState<boolean>(false);
-  const submitDecision = async (decision: Decision) => updateDecision(decision);
+  const submitDecision = async (decision: Decision) => {
+    await updateDecision(decision);
+    await refetchSearcherApplications();
+    await fetchDecision();
+    await refetchRetrieveRecord();
+  }
 
   useEffect(() => {
-    // if touched = true
-    // update decision to undecided
     // do nothing if touched = false
     if (!touched) return;
+    // do nothing if touched and application already decided for
+    if (touched && applicationDecision !== undefined) return;
+    // if touched = true
     async function markUndecided() {
+      // update decision to undecided
       await submitDecision(DECISIONS.undecided)
     }
     void markUndecided();
@@ -153,8 +182,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                 <div>
                   {applicant.name}
                 </div>
-                {getDecision(applicant.searcherDecision as Decision["value"]) && <div>
-                  Your Decision: {getDecision(applicant.searcherDecision as Decision["value"])}
+                {DecisionToString[applicant.searcherDecision as Decision["value"]] && <div>
+                  Your Decision: {DecisionToString[applicant.searcherDecision as Decision["value"]]}
                 </div>}
                 <div>
                 </div>
@@ -197,6 +226,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
           <SubmitDecisionSection
             submitDecision={submitDecision}
             decision={applicationDecision}
+            isSubmitting={isUpdatingDecision}
           />
         </div>
         <div className="col-span-3 px-6 shadow-xl">

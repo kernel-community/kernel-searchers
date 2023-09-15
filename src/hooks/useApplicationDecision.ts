@@ -22,28 +22,25 @@ export const DECISIONS = {
   }
 }
 
-export const getDecision = (decision?: Decision["value"]) => {
-  switch (decision) {
-    case "YES": return "Yes"
-    case "NO": return undefined;
-    case "UNDECIDED": return undefined;
-    default: return undefined;
-  }
+export const DecisionToString = {
+  "YES": "Yes",
+  "NO": undefined,
+  "UNDECIDED": undefined
 }
 
 export const useApplicationDecision = ({ applicationId }: { applicationId: string | undefined }) => {
   const [applicationDecisionId, setApplicationDecisionId] = useState<string[]>();
   const { isDisconnected, address } = useAccount();
 
-  const{ isError, isLoading: loading } = useQuery(
+  const{ isError, isLoading: loading, refetch: fetchDecision } = useQuery(
     [`decision-${address}-${applicationId}`],
     async () => {
       const res = await axios.post<{ ok: boolean, data: {decisionRecord: string[]} }>(`/api/getApplicationDecision`, { address, applicationId }, {
-        headers: { "Content-Type": "application/json" },
-      })
-      setApplicationDecisionId(res.data.data.decisionRecord);
-      return res;
-    },
+          headers: { "Content-Type": "application/json" },
+        })
+        setApplicationDecisionId(res.data.data.decisionRecord);
+                return res;
+      },
     {
       enabled: !isDisconnected && !!(address) && !!(applicationId),
       notifyOnChangeProps: ["data"]
@@ -76,7 +73,8 @@ export const useApplicationDecision = ({ applicationId }: { applicationId: strin
     isError,
     updateDecision,
     isUpdateDecisionError,
-    isUpdatingDecision
+    isUpdatingDecision,
+    fetchDecision
   }
 }
 

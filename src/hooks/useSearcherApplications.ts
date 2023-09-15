@@ -14,7 +14,7 @@ export const useSearcherApplications = () => {
   const [error, setError] = useState<boolean>(false);
   const { isDisconnected, address } = useAccount();
 
-  useQuery(
+  const {refetch: refetchSearcherApplications} = useQuery(
     [`user-searcher-applications`],
     async () => {
       await axios.post<{ ok: boolean, data: {
@@ -33,6 +33,6 @@ export const useSearcherApplications = () => {
     }
   );
 
-  return { applicants, loading, error }
+  return { applicants, loading, error, refetchSearcherApplications }
 }
 
