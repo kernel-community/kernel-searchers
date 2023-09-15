@@ -5,6 +5,7 @@ import { CHAINS, publicClient, webSocketPublicClient } from "src/utils/onChainCo
 import { WagmiConfig, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "src/styles/globals.css";
+import { NextSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
 
 
@@ -25,6 +26,54 @@ const config = createConfig(getDefaultConfig({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
+      <NextSeo
+        titleTemplate="Searchers | %s"
+        defaultTitle="Kernel Searchers Portal"
+        description=""
+        openGraph={{
+          url: "https://searchers.kernel.community",
+          title: "Kernel Searchers",
+          description:
+            "",
+          images: [
+            {
+              url: "",
+              alt: "",
+              type: "image/jpeg",
+            },
+          ],
+          site_name: "Kernel Searchers",
+        }}
+        twitter={{
+          handle: "@kernel0x",
+          site: "https://kernel.community",
+          cardType: "summary_large_image",
+        }}
+        additionalLinkTags={[
+          {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap",
+          },
+          {
+            rel: "preload",
+            href: "/fonts/Futura/futura-medium.ttf",
+            as: "font",
+            crossOrigin: "anonymous",
+          },
+          {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
+          },
+          {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          },
+          {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Miriam+Libre:wght@400;700&display=swap"
+          }
+        ]}
+      />
       <ThemeProvider defaultTheme="kernel">
         <WagmiConfig config={config}>
           <QueryClientProvider client={queryClient}>
@@ -36,7 +85,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
               signOutOnDisconnect={true} // defaults true
               signOutOnAccountChange={true} // defaults true
               signOutOnNetworkChange={true} // defaults true
-              onSignIn={(session?: SIWESession) => { console.log({ session }) }}
+              onSignIn={(session?: SIWESession) => {
+                console.log({ session })
+              }}
               onSignOut={() => console.log("signed out")}
             >
               <ConnectKitProvider theme="retro">

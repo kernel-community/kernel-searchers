@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/non-nullable-type-assertion-style */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import Main from "src/layout/Main";
 import type { GetServerSideProps } from "next";
@@ -23,7 +24,17 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     }
   );
   const data = await response.json() as { data: {isSearcher: boolean, searcher: Searcher }};
-  return { props: { isSearcher: data.data.isSearcher, searcher: data.data.searcher } };
+  console.log({data});
+  if (!data.data.isSearcher) {
+    console.log("returning here");
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/login',
+      },
+    }
+  }
+  return { props: { isSearcher: data.data.isSearcher, searcher: data.data?.searcher } };
 };
 
 const SubmitDecisionSection = ({
@@ -74,7 +85,7 @@ const ApplicationColumns = EXPRESSIONS_TABLE.columns.application;
 const AllApplicationColumns = Object.keys(ApplicationColumns);
 type ApplicationQuestion = (keyof typeof ApplicationColumns);
 
-const ThemeChanger = () => {
+export const ThemeChanger = () => {
   const { theme, setTheme } = useTheme()
   const THEMES = [
     {
@@ -87,17 +98,18 @@ const ThemeChanger = () => {
     }
   ]
   return (
-    <div className="flex flex-row gap-2 p-4 bg-neutral rounded-full">
-      {
-        THEMES.map((th, key) => {
-          return (
-            <div key={key} className="flex flex-row gap-1">
-              <div>{th.label}</div>
-              <input type="radio" name="radio-1" className="radio" checked={theme===th.name} onClick={() => setTheme(th.name)} />
-            </div>
-          )
-        })
-      }
+    <div className="flex flex-row md:gap-2 md:p-4 gap-1 p-1 bg-neutral rounded-full w-fit">
+      {THEMES[1]?.label}
+      <input type="checkbox" className="toggle" checked={theme===THEMES[0]?.name} onClick={() => {
+        if (theme === THEMES[0]?.name) {
+          return setTheme(THEMES[1]?.name as string);
+        }
+        if (theme === THEMES[1]?.name) {
+          return setTheme(THEMES[0]?.name as string);
+        }
+        return;
+      }} />
+      {THEMES[0]?.label}
     </div>
   )
 }
@@ -108,7 +120,9 @@ export const Footer = ({
   return (
     <div className="flex flex-row gap-3 my-6 justify-between px-6">
       <RetroButton type="button" onClick={() => prev()}>PREV</RetroButton>
+      <div className="hidden md:block">
       <ThemeChanger />
+      </div>
       <RetroButton type="button" onClick={() => next()}>NEXT</RetroButton>
     </div>
   )
@@ -186,8 +200,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
 
   return (
     <Main isSearcher={isSearcher} searcher={searcher}>
-      <div className="grid grid-cols-3 h-full">
-        <div className="bg-base-200 overflow-y-auto">
+      <div className="grid md:grid-cols-3 grid-cols-1 h-full">
+        <div className="bg-base-200 overflow-y-auto md:block hidden">
         {/* list of all applicants */}
         <div>
           {applicants.map((applicant, key) => {
@@ -228,7 +242,9 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
               if (question as ApplicationQuestion === "name") {
                 return (
                   <div key={key} className="p-4 flex flex-row justify-between items-center">
-                    <div className="text-[2em] font-medium">{getApplicationField(question as  ApplicationQuestion)}</div>
+                    <div className="text-[3em] font-playfair">
+                      {getApplicationField(question as  ApplicationQuestion)}
+                    </div>
                     <div className="flex flex-row gap-3 items-center">
                       <p className="font-medium">Expand All</p>
                       <input type="checkbox" className="toggle" checked={expandAll} onChange={() => toggleExpandAllQuestions()} />
@@ -241,8 +257,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
                     collapse collapse-plus rounded-none border-b-2 border-primary-content
                     ${expandAll ? `collapse-open` : ``}
                   `} key={key}>
-                  <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} readOnly />
-                  <div className="collapse-title text-xl">
+                  <input type="radio" name="my-accordion-2" checked={expandQuestion === question} onClick={() => toggleExpandQuestion(question as ApplicationQuestion)} />
+                  <div className="collapse-title text-xl font-miriam">
                     {ApplicationColumns[question as ApplicationQuestion].label}
                   </div>
                   <div className="collapse-content min-w-full">
@@ -258,7 +274,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
             isSubmitting={isUpdatingDecision}
           />
         </div>
-        <div className="col-span-3 shadow-xl border-2 border-primary-content">
+        <div className="md:col-span-3 shadow-xl border-2 border-primary-content">
           <Footer next={nextApplicantIndex} prev={prevApplicantIndex} />
         </div>
       </div>

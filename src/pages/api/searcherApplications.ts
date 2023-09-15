@@ -26,9 +26,6 @@ const searcherApplications = async (req: NextApiRequest, res: NextApiResponse) =
       searcherDecision: applicant.fields[ASSIGNMENTS_TABLE.columns.decision]?.toString()
     }
   }), "id");
-
-
-  // fetch data for each of these ids
   return res.status(200).json({ ok: true, data: {applicants} });
 }
 

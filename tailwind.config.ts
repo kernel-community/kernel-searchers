@@ -3,7 +3,15 @@ import { type Config } from "tailwindcss";
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        futura: ["Futura", "sans-serif"],
+        libre: ["Libre Franklin", "sans-serif"],
+        playfair: ["Playfair Display", "sans-serif"],
+        cormorant: ["Cormorant Garamond", "serif"],
+        miriam: ["Miriam Libre", "sans-serif"],
+      },
+    },
   },
   plugins: [
     require('@tailwindcss/typography'),
@@ -20,15 +28,9 @@ export default {
           "accent": "#FFA800",
           "neutral-content": "#212144",
           "base-100": "#F8E6B7",
-          fontFamily: {
-          }
         }
       },
-      "dark",
       "forest",
-      "retro",
-      "synthwave",
-      "dracula",
     ], // true: all themes | false: only light + dark | array: specific themes like this ["light", "dark", "cupcake"]
     base: true, // applies background color and foreground color for root element by default
     styled: true, // include daisyUI colors and design decisions for all components
