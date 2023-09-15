@@ -48,7 +48,7 @@ export default function Navbar ({isSearcher, searcher}: {isSearcher?: boolean, s
     <div className="navbar flex flex-row justify-between shadow-xl">
       <Branding />
       <div className="flex flex-col">
-        <div>{`Searching started on ${start.toFormat('DD')}; `}</div>
+        {/* <div>{`Searching started on ${start.toFormat('DD')}; `}</div> */}
         <div>{weekText}</div>
       </div>
       <div>
