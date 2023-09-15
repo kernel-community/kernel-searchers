@@ -198,6 +198,16 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
 
   const getApplicationField = (field: ApplicationQuestion) => application?.fields[ApplicationColumns[field].default]?.toString()
 
+  if (applicants.length < 1) {
+    return (
+      <Main isSearcher={isSearcher} searcher={searcher}>
+        <div className="text-4xl font-playfair p-6">
+          You do not have any applicants assigned yet.
+        </div>
+      </Main>
+    )
+  }
+
   return (
     <Main isSearcher={isSearcher} searcher={searcher}>
       <div className="grid md:grid-cols-3 grid-cols-1 h-full">
