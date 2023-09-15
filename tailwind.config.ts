@@ -11,7 +11,25 @@ export default {
   ],
   // daisyUI config (optional - here are the default values)
   daisyui: {
-    themes: ["retro"], // true: all themes | false: only light + dark | array: specific themes like this ["light", "dark", "cupcake"]
+    themes: [
+      {
+        kernel: {
+          "primary": "#79F1B5",
+          "primary-focus": "#00CA65",
+          "neutral": "#E4E4F4",
+          "accent": "#FFA800",
+          "neutral-content": "#212144",
+          "base-100": "#F8E6B7",
+          fontFamily: {
+          }
+        }
+      },
+      "dark",
+      "forest",
+      "retro",
+      "synthwave",
+      "dracula",
+    ], // true: all themes | false: only light + dark | array: specific themes like this ["light", "dark", "cupcake"]
     base: true, // applies background color and foreground color for root element by default
     styled: true, // include daisyUI colors and design decisions for all components
     utils: true, // adds responsive and modifier utility classes

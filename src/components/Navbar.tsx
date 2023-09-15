@@ -4,18 +4,6 @@ import { type Searcher } from "src/@types";
 import {RetroConnectKitButton} from "src/components/RetroButton";
 import useCurrentWeek from "src/hooks/useCurrentWeek";
 import { useAccount } from "wagmi";
-// import { useTheme } from 'next-themes'
-// const ThemeChanger = () => {
-//   const { theme, setTheme } = useTheme()
-
-//   return (
-//     <div>
-//       The current theme is: {theme}
-//       <button className="btn" onClick={() => setTheme('retro')}>Retro</button>
-//       <button className="btn" onClick={() => setTheme('dark')}>Dark Mode</button>
-//     </div>
-//   )
-// }
 
 const Branding = () => {
   return (
@@ -45,7 +33,7 @@ export default function Navbar ({isSearcher, searcher}: {isSearcher?: boolean, s
 
 
   return (
-    <div className="navbar flex flex-row justify-between shadow-xl">
+    <div className="navbar flex flex-row justify-between border-2 border-primary-content">
       <Branding />
       <div className="flex flex-col">
         {/* <div>{`Searching started on ${start.toFormat('DD')}; `}</div> */}

@@ -10,6 +10,7 @@ import RetroButton from "src/components/RetroButton";
 import { type Decision, useApplicationDecision, DECISIONS, DecisionToString } from "src/hooks/useApplicationDecision";
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 import { type Searcher } from "src/@types";
+import { useTheme } from 'next-themes'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { address } = await siweServer.getSession(req, res);
@@ -54,7 +55,7 @@ const SubmitDecisionSection = ({
           <div className="flex flex-row gap-3 items-center">
             Your Decision: {decision}
             <button
-              className="btn btn-ghost btn-sm"
+              className="btn btn-primary btn-sm"
               onClick={() => submitDecision(DECISIONS.undecided)}
             >
               {DECISIONS.undecided.label}
@@ -69,24 +70,49 @@ const SubmitDecisionSection = ({
     </div>
   )
 }
-
-const ApplicationNavigation = ({
-  prev,
-  next
-}: {
-  prev: () => void;
-  next: () => void;
-}) => {
-  return (
-    <div className="flex flex-row gap-3 my-8 justify-between">
-    <RetroButton type="button" onClick={() => prev()}>PREV</RetroButton>
-    <RetroButton type="button" onClick={() => next()}>NEXT</RetroButton>
-  </div>
-  )
-}
 const ApplicationColumns = EXPRESSIONS_TABLE.columns.application;
 const AllApplicationColumns = Object.keys(ApplicationColumns);
 type ApplicationQuestion = (keyof typeof ApplicationColumns);
+
+const ThemeChanger = () => {
+  const { theme, setTheme } = useTheme()
+  const THEMES = [
+    {
+      label: "🪴",
+      name: "forest"
+    },
+    {
+      label: "🌻",
+      name: "kernel"
+    }
+  ]
+  return (
+    <div className="flex flex-row gap-2 p-4 bg-neutral rounded-full">
+      {
+        THEMES.map((th, key) => {
+          return (
+            <div key={key} className="flex flex-row gap-1">
+              <div>{th.label}</div>
+              <input type="radio" name="radio-1" className="radio" checked={theme===th.name} onClick={() => setTheme(th.name)} />
+            </div>
+          )
+        })
+      }
+    </div>
+  )
+}
+
+export const Footer = ({
+  prev, next
+}: {prev: () => void, next:() => void}) => {
+  return (
+    <div className="flex flex-row gap-3 my-6 justify-between px-6">
+      <RetroButton type="button" onClick={() => prev()}>PREV</RetroButton>
+      <ThemeChanger />
+      <RetroButton type="button" onClick={() => next()}>NEXT</RetroButton>
+    </div>
+  )
+}
 
 
 export default function Home({ isSearcher, searcher }: { isSearcher: boolean, searcher: Searcher }) {
@@ -161,7 +187,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
   return (
     <Main isSearcher={isSearcher} searcher={searcher}>
       <div className="grid grid-cols-3 h-full">
-        <div className="bg-primary overflow-y-auto">
+        <div className="bg-base-200 overflow-y-auto">
         {/* list of all applicants */}
         <div>
           {applicants.map((applicant, key) => {
@@ -169,12 +195,15 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
               <div key={key}
                 className={
                   `
-                    py-12
+                    py-6
                     px-2
                     border-primary-content
-                    border-b-2
                     cursor-pointer
-                    ${applicantIndex === key ? `bg-primary-focus` : ``}
+                    rounded-md
+                    m-2
+                    hover:bg-neutral
+                    hover:text-neutral-content
+                    ${applicantIndex === key ? `bg-neutral text-neutral-content` : ``}
                   `
                 }
                 onClick={() => setApplicantIndex(key)}
@@ -192,7 +221,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
           })}
         </div>
         </div>
-        <div className="bg-base-200 col-span-2 overflow-y-scroll">
+        <div className="bg-base-100 col-span-2 overflow-y-auto">
           {
             AllApplicationColumns.map((question, key) => {
               if (!getApplicationField(question as ApplicationQuestion)) return null;
@@ -229,11 +258,8 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
             isSubmitting={isUpdatingDecision}
           />
         </div>
-        <div className="col-span-3 px-6 shadow-xl">
-          <ApplicationNavigation
-            prev={prevApplicantIndex}
-            next={nextApplicantIndex}
-          />
+        <div className="col-span-3 shadow-xl border-2 border-primary-content">
+          <Footer next={nextApplicantIndex} prev={prevApplicantIndex} />
         </div>
       </div>
     </Main>

@@ -25,7 +25,7 @@ const config = createConfig(getDefaultConfig({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
-      <ThemeProvider defaultTheme="retro">
+      <ThemeProvider defaultTheme="kernel">
         <WagmiConfig config={config}>
           <QueryClientProvider client={queryClient}>
             <siweClient.Provider
