@@ -1,8 +1,8 @@
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { configureChains } from "wagmi";
-import { goerli } from "wagmi/chains";
+import { goerli, mainnet, polygon } from "wagmi/chains";
 
-export const CHAINS = [goerli];
+export const CHAINS = [goerli, mainnet, polygon];
 
 export const { publicClient, webSocketPublicClient } = configureChains(
   CHAINS,
