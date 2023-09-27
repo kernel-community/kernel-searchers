@@ -28,11 +28,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     <>
       <NextSeo
         titleTemplate="Searchers | %s"
-        defaultTitle="Kernel Searchers Portal"
+        defaultTitle="Kernel Searching Portal"
         description=""
         openGraph={{
-          url: "https://searchers.kernel.community",
-          title: "Kernel Searchers",
+          url: "https://searching.kernel.community",
+          title: "Kernel Searching Portal",
           description:
             "",
           images: [
@@ -42,7 +42,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
               type: "image/jpeg",
             },
           ],
-          site_name: "Kernel Searchers",
+          site_name: "Kernel Searching Portal",
         }}
         twitter={{
           handle: "@kernel0x",

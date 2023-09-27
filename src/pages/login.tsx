@@ -32,7 +32,7 @@ const LoginPage: NextPage = () => {
   return (
     <div className="p-6 flex flex-col gap-12">
       <div className="font-playfair text-4xl flex flex-row gap-3 items-center">
-        Login to continue with the Searcher Portal
+        Login to the Kernel Searching Portal
         <span>
           <RetroConnectKitButton />
         </span>

@@ -40,7 +40,7 @@ export const EXPRESSIONS_TABLE = {
       // },
       kernelEnquiry: {
         default: "Kernel Enquiry",
-        label: "Kernel Enquiry"
+        label: "Adventure"
       },
       meaningmaking: {
         default: "Meaningmaking",
