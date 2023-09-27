@@ -202,7 +202,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
     return (
       <Main isSearcher={isSearcher} searcher={searcher}>
         <div className="text-4xl font-playfair p-6">
-          You do not have any applicants assigned yet.
+          You do not have any applications assigned yet.
         </div>
       </Main>
     )
