@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 export type Decision = {
-  value: "YES" | "NO" | "UNDECIDED",
+  value: "YES" | "NO" | "UNDECIDED" | "WITHDRAW",
   label: string;
 };
 
@@ -19,13 +19,18 @@ export const DECISIONS = {
   "undecided": {
     value: "UNDECIDED" as Decision["value"],
     label: "Remove decision?"
+  },
+  "withdraw": {
+    value: "WITHDRAW" as Decision["value"],
+    label: "I know the person"
   }
 }
 
 export const DecisionToString = {
   "YES": "Yes",
   "NO": undefined,
-  "UNDECIDED": undefined
+  "UNDECIDED": undefined,
+  "WITHDRAW": "Withdrew Decision (I know the person)"
 }
 
 export const useApplicationDecision = ({ applicationId }: { applicationId: string | undefined }) => {

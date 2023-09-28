@@ -48,18 +48,27 @@ const SubmitDecisionSection = ({
 }) => {
   const decisionString = DecisionToString[decision as Decision["value"]]
   return (
-    <div className="px-6 py-6">
-      <div className="flex flex-row gap-3 mb-8">
+    <div className="p-6 mx-auto my-4 border-2 border-base-content rounded-md w-1/2 h-28">
+      <div className="">
         {/* IF decision hasn't been made / undecided */}
         {
           !decisionString &&
-          <RetroButton
-            type="button"
-            onClick={() => submitDecision(DECISIONS.yes)}
-            isLoading={isSubmitting}
-          >
-            {DECISIONS.yes.label}
-          </RetroButton>
+          <div className="flex flex-row gap-3">
+            <RetroButton
+              type="button"
+              onClick={() => submitDecision(DECISIONS.yes)}
+              isLoading={isSubmitting}
+            >
+              {DECISIONS.yes.label}
+            </RetroButton>
+            <RetroButton
+              type="button"
+              onClick={() => submitDecision(DECISIONS.withdraw)}
+              isLoading={isSubmitting}
+            >
+              {DECISIONS.withdraw.label}
+            </RetroButton>
+          </div>
         }
         {/* IF decision has been made, mark as "undecided" */}
         {decisionString &&
