@@ -10,7 +10,7 @@ export type Decision = {
 export const DECISIONS = {
   "yes": {
     value: "YES" as Decision["value"],
-    label: "✅"
+    label: "Accept Application"
   },
   "no": {
     value: "NO" as Decision["value"],
@@ -55,11 +55,11 @@ export const useApplicationDecision = ({ applicationId }: { applicationId: strin
   const [isUpdatingDecision, setIsUpdatingDecision] = useState<boolean>(false);
   const [isUpdateDecisionError, setIsUpdateDecisionError] = useState<boolean>(false);
 
-  const updateDecision = async (decision: Decision) => {
+  const updateDecision = async (decision: Decision["value"]) => {
     setIsUpdatingDecision(true);
     setIsUpdateDecisionError(false);
     try {
-      const res = await axios.post<{ ok: boolean, data: {response: string[]} }>(`/api/updateApplicationDecision`, { address, applicationId, decision: decision?.value }, {
+      const res = await axios.post<{ ok: boolean, data: {response: string[]} }>(`/api/updateApplicationDecision`, { address, applicationId, decision }, {
         headers: { "Content-Type": "application/json" },
       })
       setIsUpdatingDecision(false);

@@ -42,31 +42,41 @@ const SubmitDecisionSection = ({
   isSubmitting,
   decision
 }: {
-  submitDecision: (decision: Decision) => Promise<unknown>;
+  submitDecision: (decision: Decision["value"]) => Promise<unknown>;
   decision?: string;
   isSubmitting: boolean;
 }) => {
   const decisionString = DecisionToString[decision as Decision["value"]]
+  const [selectedDecision, setSelectedDecision] = useState<Decision["value"]>("UNDECIDED");
   return (
-    <div className="p-6 mx-auto my-4 border-2 border-base-content rounded-md w-1/2 h-28">
+    <div className="p-6 mx-auto my-4 border-2 border-base-content rounded-md w-1/2 h-min-content">
       <div className="">
         {/* IF decision hasn't been made / undecided */}
         {
           !decisionString &&
-          <div className="flex flex-row gap-3">
+
+          <div className="form flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
+            <div className="form-control">
+              <label className="label cursor-pointer" onClick={() => setSelectedDecision(DECISIONS.yes.value)}>
+                <span className="label-text mx-2">{DECISIONS.yes.label}</span>
+                <input type="radio" name="radio-10" className="radio radio-primary" checked={selectedDecision === DECISIONS.yes.value} />
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer" onClick={() => setSelectedDecision(DECISIONS.withdraw.value)}>
+                <span className="label-text mx-2">{DECISIONS.withdraw.label}</span>
+                <input type="radio" name="radio-10" className="radio radio-primary" checked={selectedDecision===DECISIONS.withdraw.value} />
+              </label>
+            </div>
+            </div>
+
             <RetroButton
-              type="button"
-              onClick={() => submitDecision(DECISIONS.yes)}
+              type="submit"
+              onClick={() => submitDecision(selectedDecision)}
               isLoading={isSubmitting}
             >
-              {DECISIONS.yes.label}
-            </RetroButton>
-            <RetroButton
-              type="button"
-              onClick={() => submitDecision(DECISIONS.withdraw)}
-              isLoading={isSubmitting}
-            >
-              {DECISIONS.withdraw.label}
+              Submit Decision
             </RetroButton>
           </div>
         }
@@ -76,7 +86,7 @@ const SubmitDecisionSection = ({
             Your Decision: {decision}
             <button
               className="btn btn-primary btn-sm"
-              onClick={() => submitDecision(DECISIONS.undecided)}
+              onClick={() => submitDecision(DECISIONS.undecided.value)}
             >
               {DECISIONS.undecided.label}
               {
@@ -150,7 +160,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
   const totalApplicants = applicants.length - 1;
 
   const [touched, setTouched] = useState<boolean>(false);
-  const submitDecision = async (decision: Decision) => {
+  const submitDecision = async (decision: Decision["value"]) => {
     await updateDecision(decision);
     await refetchSearcherApplications();
     await fetchDecision();
@@ -165,7 +175,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
     // if touched = true
     async function markUndecided() {
       // update decision to undecided
-      await submitDecision(DECISIONS.undecided)
+      await submitDecision(DECISIONS.undecided.value)
     }
     void markUndecided();
   // eslint-disable-next-line react-hooks/exhaustive-deps
