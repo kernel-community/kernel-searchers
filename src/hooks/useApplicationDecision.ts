@@ -14,7 +14,7 @@ export const DECISIONS = {
   },
   "no": {
     value: "NO" as Decision["value"],
-    label: "❌"
+    label: "Reject Application"
   },
   "undecided": {
     value: "UNDECIDED" as Decision["value"],

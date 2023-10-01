@@ -12,6 +12,9 @@ import { type Decision, useApplicationDecision, DECISIONS, DecisionToString } fr
 import { EXPRESSIONS_TABLE } from "src/server/airtable/constants";
 import { type Searcher } from "src/@types";
 import { useTheme } from 'next-themes'
+import { useAccount } from "wagmi";
+import { useRouter } from "next/router";
+import SmallButton from "src/components/SmallButton";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { address } = await siweServer.getSession(req, res);
@@ -24,9 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     }
   );
   const data = await response.json() as { data: {isSearcher: boolean, searcher: Searcher }};
-  console.log({data});
   if (!data.data.isSearcher) {
-    console.log("returning here");
     return {
       redirect: {
         permanent: false,
@@ -47,56 +48,51 @@ const SubmitDecisionSection = ({
   isSubmitting: boolean;
 }) => {
   const decisionString = DecisionToString[decision as Decision["value"]]
-  const [selectedDecision, setSelectedDecision] = useState<Decision["value"]>("UNDECIDED");
+  const [selectedDecision, setSelectedDecision] = useState<Decision["value"]>("YES");
   return (
-    <div className="p-6 mx-auto my-4 border-2 border-base-content rounded-md w-1/2 h-min-content">
-      <div className="">
+    <div className="p-3 mx-auto my-4 border-2 border-base-content rounded-md w-1/2 h-min-content">
         {/* IF decision hasn't been made / undecided */}
         {
           !decisionString &&
-
-          <div className="form flex flex-col gap-4">
-            <div className="flex flex-row gap-4">
+          <div className="form flex flex-col gap-3">
+            <div className="flex flex-col gap-3 items-center">
             <div className="form-control">
-              <label className="label cursor-pointer" onClick={() => setSelectedDecision(DECISIONS.yes.value)}>
-                <span className="label-text mx-2">{DECISIONS.yes.label}</span>
-                <input type="radio" name="radio-10" className="radio radio-primary" checked={selectedDecision === DECISIONS.yes.value} />
+              <label className="label cursor-pointer gap-3" onClick={() => setSelectedDecision(DECISIONS.yes.value)}>
+                <input type="checkbox" name="checkbox" className="checkbox checkbox-primary h-12 w-12" checked={selectedDecision === DECISIONS.yes.value} />
+                {/* <span className="label-text text-5xl">{DECISIONS.yes.label}</span> */}
               </label>
             </div>
-            <div className="form-control">
-              <label className="label cursor-pointer" onClick={() => setSelectedDecision(DECISIONS.withdraw.value)}>
-                <span className="label-text mx-2">{DECISIONS.withdraw.label}</span>
-                <input type="radio" name="radio-10" className="radio radio-primary" checked={selectedDecision===DECISIONS.withdraw.value} />
-              </label>
-            </div>
-            </div>
-
             <RetroButton
               type="submit"
               onClick={() => submitDecision(selectedDecision)}
-              isLoading={isSubmitting}
+              isLoading={selectedDecision === DECISIONS.yes.value && isSubmitting}
             >
-              Submit Decision
+              Submit
             </RetroButton>
+            </div>
+            <div className="form-control mt-4 flex flex-row justify-end items-center">
+              <label className="label cursor-pointer  gap-3" onClick={() => setSelectedDecision(DECISIONS.withdraw.value)}>
+                <input type="checkbox" name="checkbox" className="checkbox checkbox-accent h-4 w-4" checked={selectedDecision===DECISIONS.withdraw.value} />
+                <span className="label-text">{DECISIONS.withdraw.label}</span>
+              </label>
+              {
+                selectedDecision===DECISIONS.withdraw.value &&
+                <SmallButton className="btn-xs btn btn-primary" onClick={() => submitDecision(selectedDecision)} isLoading={isSubmitting}>
+                  Submit
+                </SmallButton>
+              }
+            </div>
           </div>
         }
         {/* IF decision has been made, mark as "undecided" */}
         {decisionString &&
-          <div className="flex flex-row gap-3 items-center">
+          <div className="flex flex-col items-center gap-3">
             Your Decision: {decision}
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => submitDecision(DECISIONS.undecided.value)}
-            >
+            <SmallButton onClick={() => submitDecision(DECISIONS.undecided.value)} isLoading={isSubmitting}>
               {DECISIONS.undecided.label}
-              {
-                isSubmitting &&
-                <span className="loading loading-spinner loading-xs"></span>
-              }
-            </button>
+            </SmallButton>
           </div>
         }
-      </div>
     </div>
   )
 }
@@ -160,12 +156,21 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
   const totalApplicants = applicants.length - 1;
 
   const [touched, setTouched] = useState<boolean>(false);
+  const {isConnected} = useAccount();
+
   const submitDecision = async (decision: Decision["value"]) => {
     await updateDecision(decision);
     await refetchSearcherApplications();
     await fetchDecision();
     await refetchRetrieveRecord();
   }
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isConnected) {
+      void router.push(`/login`);
+    }
+  }, [isConnected, router])
 
   useEffect(() => {
     // do nothing if touched = false
@@ -217,7 +222,7 @@ export default function Home({ isSearcher, searcher }: { isSearcher: boolean, se
 
   const getApplicationField = (field: ApplicationQuestion) => application?.fields[ApplicationColumns[field].default]?.toString()
 
-  if (applicants.length < 1) {
+  if (isConnected && applicants.length < 1) {
     return (
       <Main isSearcher={isSearcher} searcher={searcher}>
         <div className="text-4xl font-playfair p-6">
