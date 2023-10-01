@@ -62,10 +62,10 @@ export const EXPRESSIONS_TABLE = {
         default: "Links",
         label: "Links"
       },
-      uploads: {
-        default: "Uploads",
-        label: "Uploads"
-      },
+      // uploads: {
+      //   default: "Uploads",
+      //   label: "Uploads"
+      // },
       other: {
         default: "Other",
         label: "Other"
