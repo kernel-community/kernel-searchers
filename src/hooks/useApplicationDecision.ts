@@ -22,7 +22,7 @@ export const DECISIONS = {
   },
   "withdraw": {
     value: "WITHDRAW" as Decision["value"],
-    label: "I know the person"
+    label: "I know the candidate"
   }
 }
 
