@@ -1,27 +1,15 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { type AppType } from "next/dist/shared/lib/utils";
-import { siweClient } from "src/utils/siweClient";
-import { ConnectKitProvider, getDefaultConfig, type SIWESession } from "connectkit";
-import { CHAINS, publicClient, webSocketPublicClient } from "src/utils/onChainConfig";
-import { WagmiConfig, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "src/styles/globals.css";
 import { NextSeo } from "next-seo";
 import { ThemeProvider } from "next-themes";
-
+import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
+import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
+import { updateUser } from "src/utils/updateUser";
+import { DEFAULT_USER_NAME } from "src/utils/constants";
 
 const queryClient = new QueryClient()
-const config = createConfig(getDefaultConfig({
-  alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID,
-  // /env.mjs ensures the the app isn't built without .env vars
-  walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-  appName: "KERNEL Searchers App",
-  appDescription: "Kernel Searchers Helper App",
-  appUrl: "https://kernel.community",
-  appIcon: "https://kernel.community/logo.png",
-  publicClient,
-  webSocketPublicClient,
-  chains: CHAINS
-}));
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -75,28 +63,33 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         ]}
       />
       <ThemeProvider defaultTheme="kernel">
-        <WagmiConfig config={config}>
-          <QueryClientProvider client={queryClient}>
-            <siweClient.Provider
-              // Optional parameters
-              enabled={true} // defaults true
-              nonceRefetchInterval={300000} // in milliseconds, defaults to 5 minutes
-              sessionRefetchInterval={300000}// in milliseconds, defaults to 5 minutes
-              signOutOnDisconnect={true} // defaults true
-              signOutOnAccountChange={true} // defaults true
-              signOutOnNetworkChange={true} // defaults true
-              onSignIn={(session?: SIWESession) => {
-                console.log({ session })
-              }}
-              onSignOut={() => console.log("signed out")}
-            >
-              <ConnectKitProvider theme="retro">
+        <QueryClientProvider client={queryClient}>
+          <DynamicContextProvider
+            settings={{
+              environmentId: '15d3d3d6-52c6-4f80-aab5-f219e2f6991e',
+              eventsCallbacks: {
+                // create a new user
+                onAuthSuccess: ({ user }) => updateUser({
+                    email: user.email,
+                    name: "Anonymous",
+                    id: user.userId, // @dev @note important
+                    block: 0
+                  }),
+                // update existing user
+                onUserProfileUpdate: (user) => updateUser({
+                    email: user.email,
+                    id: user.userId, // @dev @note important
+                  }),
+              },
+            }}
+
+          >
+            <DynamicWagmiConnector>
                 <Component {...pageProps} />
-              </ConnectKitProvider>
-            </siweClient.Provider>
-          </QueryClientProvider>
-        </WagmiConfig>
-      </ThemeProvider>
+          </DynamicWagmiConnector>
+        </DynamicContextProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
     </>
   )
 };
