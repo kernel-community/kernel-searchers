@@ -4,7 +4,7 @@ import Main from "src/layout/Main";
 import RetroButton from "src/components/RetroButton";
 import { type Searcher } from "src/@types";
 import { useTheme } from 'next-themes'
-import useUser from "src/hooks/useUser";
+import { useIsFellow } from "src/hooks/useIsFellow";
 export const ThemeChanger = () => {
   const { theme, setTheme } = useTheme()
   const THEMES = [
@@ -50,12 +50,21 @@ export const Footer = ({
 
 
 export default function Home({ isSearcher, searcher }: { isSearcher: boolean, searcher: Searcher }) {
-  const {user: {name, isSignedIn}} = useUser();
-  console.log({isSignedIn})
-
+  const {isFellow, loading, fellow} = useIsFellow();
+  if (!isFellow || !fellow) {
+    return (
+      <Main isSearcher={isSearcher} searcher={searcher}>
+        <div className="p-5">
+          Hello! The Kernel Atlas is currently only accessible to the Kernel Fellows.
+        </div>
+      </Main>
+    )
+  }
   return (
     <Main isSearcher={isSearcher} searcher={searcher}>
-      hello {name}
+      <div className="p-5">
+        hello {fellow?.name}
+      </div>
     </Main>
   );
 }

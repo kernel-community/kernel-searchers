@@ -6,14 +6,7 @@ import { useQuery } from "react-query";
 
 const useUser = () => {
   const { isAuthenticated, handleLogOut, user } = useDynamicContext();
-  const [fetchedUser, setFetchedUser] = useState<User & {isSignedIn: boolean}>({
-      id: "",
-      name: "anonymous",
-      block: 0,
-      email: "",
-      isSignedIn: false
-  });
-
+  const [fetchedUser, setFetchedUser] = useState<User & {isSignedIn: boolean}>();
   const email = user?.email;
 
   useQuery(

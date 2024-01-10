@@ -12,7 +12,7 @@ const LoginPage: NextPage = () => {
         Kernel Atlas
         <DynamicLoginButton />
       </div>
-          {user.isSignedIn ? <Link className="font-miriam cursor-pointer text-3xl" href={"/"}>
+          {user?.isSignedIn ? <Link className="font-miriam cursor-pointer text-3xl" href={"/"}>
             <div>
                 Click
                 <span className="text-primary">

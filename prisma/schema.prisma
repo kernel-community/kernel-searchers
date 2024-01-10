@@ -12,21 +12,22 @@ datasource db {
 
 model User {
   id       String     @id @default(uuid())
-  email    String?     @unique
+  email    String?    @unique
   name     String?
-  block    Int?
+  block    Int        @default(-1)
   profile  Profile?
   // features the person has access to
   Features Features[]
 }
 
 model Features {
-  id        String  @id @default(uuid())
-  userId    String
-  person    User    @relation(fields: [userId], references: [id])
+  id         String  @id @default(uuid())
+  userId     String
+  person     User    @relation(fields: [userId], references: [id])
   // a new "Feature" will represent a column here, marking it as true would allow the person
   // to have access to that particular feature and its functionality
-  searching Boolean @default(false)
+  searching  Boolean @default(false) // search for new fellows
+  stewarding Boolean @default(false) // admin / ops
 }
 
 model Profile {

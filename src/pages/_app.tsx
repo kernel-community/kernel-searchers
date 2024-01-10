@@ -71,9 +71,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                 // create a new user
                 onAuthSuccess: ({ user }) => updateUser({
                     email: user.email,
-                    name: "Anonymous",
                     id: user.userId, // @dev @note important
-                    block: 0
                   }),
                 // update existing user
                 onUserProfileUpdate: (user) => updateUser({
