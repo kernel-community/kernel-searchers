@@ -4,6 +4,11 @@ import Main from "src/layout/Main";
 import RetroButton from "src/components/RetroButton";
 import { useTheme } from 'next-themes'
 import { useIsFellow } from "src/hooks/useIsFellow";
+
+// @note make checking for fellow server side
+// would involve using passportjs-dynamic on the server for auth
+
+
 export const ThemeChanger = () => {
   const { theme, setTheme } = useTheme()
   const THEMES = [
@@ -49,19 +54,7 @@ export const Footer = ({
 
 
 export default function Home() {
-  const {isFellow, loading, fellow} = useIsFellow();
-
-  // loading state
-  if (loading) {
-    return (
-      <Main>
-        <div className="p-5">
-          Loading
-        </div>
-      </Main>
-    )
-  }
-
+  const {isFellow, fellow} = useIsFellow();
   // non-fellow view
   if (!isFellow || !fellow) {
     return (

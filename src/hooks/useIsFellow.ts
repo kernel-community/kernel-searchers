@@ -4,16 +4,16 @@
 import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import useUser from "./useUser";
 import { type User } from "@prisma/client";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export const useIsFellow = () => {
   const [isFellow, setIsFellow] = useState<boolean>(false);
   const [fellow, setFellow] = useState<User>();
   const [error, setError] = useState<boolean>(false);
-  const {user} = useUser();
+  const { user } = useDynamicContext();
 
-  const {isFetching} = useQuery(
+  useQuery(
     [`user-${user?.email}`],
     async () => {
       await axios.post<{ ok: boolean, data: { isFellow: boolean, fellow: User } }>(`/api/isUserFellow`, {email: user?.email}, {
@@ -26,10 +26,11 @@ export const useIsFellow = () => {
       .catch(() => setError(true))
     },
     {
-      enabled: !!(user)
+      enabled: !!(user),
+      refetchInterval: 100
     }
   );
 
-  return { isFellow, loading: isFetching, error, fellow }
+  return { isFellow, error, fellow }
 }
 
