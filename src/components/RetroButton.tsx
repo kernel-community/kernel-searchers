@@ -1,7 +1,10 @@
-import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { ConnectKitButton } from "connectkit";
 import { useState, type ButtonHTMLAttributes, type ReactNode, useEffect } from "react";
+import useUser from "src/hooks/useUser";
 import formatWalletAddress from "src/utils/formatWalletAddress";
+import SmallButton from "./SmallButton";
+import Link from "next/link";
 
 type ButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -56,11 +59,26 @@ export const DynamicLoginButton = () => {
   useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
 
   if (wrapIsAuthenticated) {
-    return <DynamicWidget />
+    // return <DynamicWidget />
+    return <UserProfileButton />
   }
   return (
     <RetroButton onClick={() => setShowAuthFlow(true)}>Sign in</RetroButton>
   );
+}
+
+const UserProfileButton = () => {
+  const {user} = useUser();
+  if (!user) {
+    return (<></>)
+  }
+  return (
+    <Link href={`/u/${user.id}`} passHref>
+      <SmallButton>
+        {user.name}
+      </SmallButton>
+    </Link>
+  )
 }
 
 export default RetroButton;
