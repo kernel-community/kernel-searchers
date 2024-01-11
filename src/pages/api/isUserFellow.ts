@@ -6,10 +6,8 @@ import isInFellowList from "src/server/utils/isInFellowList";
 const isUserFellow = async (req: NextApiRequest, res: NextApiResponse) => {
   console.log("[api/isUserFellow]")
   const { email } = pick(req.body, ["email"]) as { email: string };
-  console.log({email});
   if (email) {
     const found = await isInFellowList(email);
-    console.log({found})
     return res.status(200).json({ ok: true, data: { isFellow: found.isFellow, fellow: found.fellow } });
   }
 

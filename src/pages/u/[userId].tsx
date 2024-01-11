@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
-import useUser from "src/hooks/useUser";
+import useUserFromUserId from "src/hooks/useUserFromUserId";
 import Main from "src/layout/Main";
 
 const Profile = () => {
   const { query } = useRouter();
   const { userId } = query;
-  const {user} = useUser({ userId: userId?.toString() });
+  const { user } = useUserFromUserId({ userId: userId?.toString() });
   if (!user) {
     return (
       <Main> User not found </Main>

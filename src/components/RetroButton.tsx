@@ -54,31 +54,23 @@ export const RetroConnectKitButton = () =>{
 export const DynamicLoginButton = () => {
   const { setShowAuthFlow, isAuthenticated } = useDynamicContext();
   const [wrapIsAuthenticated, setWrapIsAuthenticated] = useState<boolean>(false);
+  const {user} = useUser();
 
   // @help @dev @note not sure why but usage of isAuthenticated directly is resulting in a hydration error
   useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
 
-  if (wrapIsAuthenticated) {
+  if (user && wrapIsAuthenticated) {
     // return <DynamicWidget />
-    return <UserProfileButton />
+    return (<Link href={`/u/${user.id}`} passHref>
+    <SmallButton>
+      {user.name}
+    </SmallButton>
+  </Link>)
   }
   return (
     <RetroButton onClick={() => setShowAuthFlow(true)}>Sign in</RetroButton>
   );
 }
 
-const UserProfileButton = () => {
-  const {user} = useUser();
-  if (!user) {
-    return (<></>)
-  }
-  return (
-    <Link href={`/u/${user.id}`} passHref>
-      <SmallButton>
-        {user.name}
-      </SmallButton>
-    </Link>
-  )
-}
 
 export default RetroButton;

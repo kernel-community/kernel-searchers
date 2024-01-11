@@ -1,4 +1,3 @@
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { type User } from "@prisma/client";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -7,19 +6,16 @@ import { useQuery } from "react-query";
  * either provide a userId to query the database for the a specific user's info
  * or fetch currently logged in user's data through email
  */
-const useUser = () => {
-  const { isAuthenticated, handleLogOut, user } = useDynamicContext();
+const useUserFromUserId = ({ userId }: { userId?: string }) => {
   const [fetchedUser, setFetchedUser] = useState<User & {isSignedIn: boolean}>();
-  const email = user?.email;
-
   useQuery(
-    [`user-${email}`],
+    [`user-${userId}`],
     async () => {
       try {
         const r = (
           await (
             await fetch("/api/query/user", {
-              body: JSON.stringify({ email }),
+              body: JSON.stringify({ userId }),
               method: "POST",
               headers: { "Content-type": "application/json" },
             })
@@ -28,23 +24,24 @@ const useUser = () => {
         if (r.ok === true) {
           setFetchedUser(() => {
             return {
-              ...r.data,
-              // the user was successfully found
-              // in the database + the user is
-              // connected via web3
-              isSignedIn: isAuthenticated,
+              ...r.data
             };
           });
         }
       } catch (err) {
-        // error (idk)
-        console.log(err);
+        /**
+         * if user not found, disconnect
+         */
+        console.log(err)
+        throw err;
       }
+    },
+    {
+      cacheTime: 0,
+      enabled: !!(userId)
     }
   );
-  return {
-    handleLogOut, user: fetchedUser
-  }
+  return { user: fetchedUser }
 }
 
-export default useUser;
+export default useUserFromUserId;
