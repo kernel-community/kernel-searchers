@@ -12,11 +12,17 @@ export default async function user(
   if (userId) {
     user = await prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        profile: true
+      }
     });
   }
   if (email) {
     user = await prisma.user.findUnique({
       where: { email },
+      include: {
+        profile: true
+      }
     });
   }
   if (!user) {
