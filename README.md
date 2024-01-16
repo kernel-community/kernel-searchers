@@ -24,6 +24,8 @@ export SESSION_SECRET=
 
 export AIRTABLE_PERSONAL_ACCESS_TOKEN=
 export AUTH_TOKEN=
+
+export DATABASE_URL=postgresql://kernel:secretpassword@localhost:5436/atlas
 ```
 
 You will be needing Alchemy API, WalletConnect Project ID, Airtable API keys.
