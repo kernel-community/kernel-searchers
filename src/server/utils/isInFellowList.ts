@@ -14,6 +14,8 @@ const isInFellowList = async (email: string): Promise<{
   }
   if (email) {
     const found = fellows.find(fellow => fellow?.email?.toLowerCase() === email.toLowerCase() && fellow.block > -1);
+    console.log('email', email)
+    console.log('found', found)
     return {
       isFellow: !!found,
       fellow: found

@@ -3,7 +3,9 @@
 import Main from "src/layout/Main";
 import RetroButton from "src/components/RetroButton";
 import { useTheme } from 'next-themes'
-import { useIsFellow } from "src/hooks/useIsFellow";
+import { prisma } from "src/server/db";
+import isInFellowList from "src/server/utils/isInFellowList";
+import React from "react";
 
 // @note make checking for fellow server side
 // would involve using passportjs-dynamic on the server for auth
@@ -24,7 +26,7 @@ export const ThemeChanger = () => {
   return (
     <div className="flex flex-row md:gap-2 md:p-4 gap-1 p-1 bg-neutral rounded-full w-fit">
       {THEMES[1]?.label}
-      <input type="checkbox" className="toggle" checked={theme===THEMES[0]?.name} onClick={() => {
+      <input type="checkbox" className="toggle" checked={theme === THEMES[0]?.name} onClick={() => {
         if (theme === THEMES[0]?.name) {
           return setTheme(THEMES[1]?.name as string);
         }
@@ -40,38 +42,57 @@ export const ThemeChanger = () => {
 
 export const Footer = ({
   prev, next
-}: {prev: () => void, next:() => void}) => {
+}: { prev: () => void, next: () => void }) => {
   return (
     <div className="flex flex-row gap-3 my-6 justify-between px-6">
       <RetroButton type="button" onClick={() => prev()}>PREV</RetroButton>
       <div className="hidden md:block">
-      <ThemeChanger />
+        <ThemeChanger />
       </div>
       <RetroButton type="button" onClick={() => next()}>NEXT</RetroButton>
     </div>
   )
 }
 
+const fetchData = async (email: string) => {
+  const findUser = await prisma.user.findUnique({
+    where: { email },
+    include: {
+      profile: true,
+    },
+  });
 
-export default function Home() {
-  const {isUserFellow, userFellow} = useIsFellow();
-  // non-fellow view
-  if (!isUserFellow || !userFellow) {
-    return (
-      <Main>
-        <div className="p-5">
-          Hello! The Kernel Atlas is currently only accessible to the Kernel Fellows.
-        </div>
-      </Main>
-    )
-  }
+  const { isFellow, fellow } = await isInFellowList(findUser?.email as string);
 
-  // fellow's view
+  return {
+    isUserFellow: isFellow,
+    userFellow: fellow,
+  };
+};
+
+export const getServerSideProps = async () => {
+  // const { user } = useDynamicContext(); // This line might be problematic on the server side
+  const user = { email: 'avirajkhare00@gmail.com' }
+
+  const { isUserFellow, userFellow } = await fetchData(user?.email);
+
+  return {
+    props: {
+      isUserFellow,
+      userFellow,
+    },
+  };
+};
+
+const Home = ({ isUserFellow, userFellow }) => {
   return (
     <Main>
-      <div className="p-5">
-        Explore Block 8 Fellows
-      </div>
+      <p>Is User Fellow: {isUserFellow}</p>
+      {/* {userFellow.foeEach((user: User) => {
+        <h2>{user.email}</h2>
+      })} */}
     </Main>
   );
-}
+};
+
+export default Home;
