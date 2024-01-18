@@ -6,7 +6,6 @@ export default async function user(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(`[api/query/user] fetching user`)
   const { email, userId } = _.pick(req.body, ["email", "userId"]);
   let user: User | null = null;
   if (userId) {

@@ -72,5 +72,9 @@ export const DynamicLoginButton = () => {
   );
 }
 
+export async function getServerSideProps() {
+  
+}
+
 
 export default RetroButton;

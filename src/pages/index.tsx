@@ -54,9 +54,9 @@ export const Footer = ({
 
 
 export default function Home() {
-  const {isFellow, fellow} = useIsFellow();
+  const {isUserFellow, userFellow} = useIsFellow();
   // non-fellow view
-  if (!isFellow || !fellow) {
+  if (!isUserFellow || !userFellow) {
     return (
       <Main>
         <div className="p-5">
