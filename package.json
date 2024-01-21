@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "^1.0.4",
+    "@dynamic-labs/passport-dynamic": "^0.0.9",
     "@dynamic-labs/sdk-react": "^0.18.30",
     "@dynamic-labs/sdk-react-core": "^1.0.4",
     "@dynamic-labs/wagmi-connector": "^1.0.4",

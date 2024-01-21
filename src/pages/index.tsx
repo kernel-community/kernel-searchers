@@ -2,14 +2,15 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import Main from "src/layout/Main";
 import RetroButton from "src/components/RetroButton";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useTheme } from 'next-themes'
-import { prisma } from "src/server/db";
-import isInFellowList from "src/server/utils/isInFellowList";
+import { useState, useEffect } from "react";
 import React from "react";
+import isUserFellow from "src/ssr/IsUserFellow";
+import { URL } from "src/server/utils/myUrl";
 
 // @note make checking for fellow server side
 // would involve using passportjs-dynamic on the server for auth
-
 
 export const ThemeChanger = () => {
   const { theme, setTheme } = useTheme()
@@ -54,43 +55,47 @@ export const Footer = ({
   )
 }
 
-const fetchData = async (email: string) => {
-  const findUser = await prisma.user.findUnique({
-    where: { email },
-    include: {
-      profile: true,
-    },
-  });
-
-  const { isFellow, fellow } = await isInFellowList(findUser?.email as string);
-
-  return {
-    isUserFellow: isFellow,
-    userFellow: fellow,
-  };
-};
-
-export const getServerSideProps = async () => {
-  // const { user } = useDynamicContext(); // This line might be problematic on the server side
-  const user = { email: 'avirajkhare00@gmail.com' }
-
-  const { isUserFellow, userFellow } = await fetchData(user?.email);
-
+export async function getServerSideProps() {
   return {
     props: {
-      isUserFellow,
-      userFellow,
-    },
-  };
-};
+      isuserFellow: (await isUserFellow('avirajkhare00@gmail.com')).isUserFellow,
+      userFellow: (await isUserFellow('avirajkhare00@gmail.com')).userFellow
+    }
+  }
+}
 
-const Home = ({ isUserFellow, userFellow }) => {
+export const getFellows = async (block: number) => {
+  const response = (await fetch(`${URL}/api/getAllFellow?block=` + block.toString()))
+  return response
+}
+
+const Home = ({ isuserFellow, userFellow }) => {
+  const { setShowAuthFlow, isAuthenticated, user } = useDynamicContext()
+  const [wrapIsAuthenticated, setWrapIsAuthenticated] = useState<boolean>(false);
+  useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
+  let fellows
+  getFellows(userFellow.block).
+    then(resp => {
+      fellows = resp
+    })
   return (
     <Main>
-      <p>Is User Fellow: {isUserFellow}</p>
-      {/* {userFellow.foeEach((user: User) => {
-        <h2>{user.email}</h2>
-      })} */}
+      {isAuthenticated && fellows ? (
+        fellows.forEach(e => {
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src={e.photo} alt="Kernel Fellow" /></figure>
+            <div className="card-body">
+              <h2 className="card-title">{e.name}</h2>
+              <p>{e.bio}</p>
+              <div className="card-actions justify-end">
+                <button className="btn btn-primary">View Profile</button>
+              </div>
+            </div>
+          </div>
+        })
+      ) : (
+        <p>Please log in to continue.</p>
+      )}
     </Main>
   );
 };

@@ -7,7 +7,6 @@ import { ThemeProvider } from "next-themes";
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { updateUser } from "src/utils/updateUser";
-import { DEFAULT_USER_NAME } from "src/utils/constants";
 
 const queryClient = new QueryClient()
 
