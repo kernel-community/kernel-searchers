@@ -65,6 +65,7 @@ export async function getServerSideProps() {
 }
 
 export const getFellows = async (block: number) => {
+  console.log(`${URL}/api/getAllFellow?block=` + block.toString())
   const response = (await fetch(`${URL}/api/getAllFellow?block=` + block.toString()))
   return response
 }
@@ -77,27 +78,27 @@ const Home = ({ isuserFellow, userFellow }) => {
   getFellows(userFellow.block).
     then(resp => {
       fellows = resp
-    })
-  return (
-    <Main>
-      {isAuthenticated && fellows ? (
-        fellows.forEach(e => {
-          <div className="card w-96 bg-base-100 shadow-xl">
-            <figure><img src={e.photo} alt="Kernel Fellow" /></figure>
-            <div className="card-body">
-              <h2 className="card-title">{e.name}</h2>
-              <p>{e.bio}</p>
-              <div className="card-actions justify-end">
-                <button className="btn btn-primary">View Profile</button>
+      return (
+        <Main>
+          {isAuthenticated && fellows ? (
+            fellows.forEach(e => {
+              <div className="card w-96 bg-base-100 shadow-xl">
+                <figure><img src={e.photo} alt="Kernel Fellow" /></figure>
+                <div className="card-body">
+                  <h2 className="card-title">{e.name}</h2>
+                  <p>{e.bio}</p>
+                  <div className="card-actions justify-end">
+                    <button className="btn btn-primary">View Profile</button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        })
-      ) : (
-        <p>Please log in to continue.</p>
-      )}
-    </Main>
-  );
+            })
+          ) : (
+            <p>Please log in to continue.</p>
+          )}
+        </Main>
+      );
+    })
 };
 
 export default Home;
