@@ -7,7 +7,6 @@ import { useTheme } from 'next-themes'
 import { useState, useEffect } from "react";
 import React from "react";
 import isUserFellow from "src/ssr/IsUserFellow";
-import { URL } from "src/server/utils/myUrl";
 
 // @note make checking for fellow server side
 // would involve using passportjs-dynamic on the server for auth
@@ -64,41 +63,40 @@ export async function getServerSideProps() {
   }
 }
 
-export const getFellows = async (block: number) => {
-  console.log(`${URL}/api/getAllFellow?block=` + block.toString())
-  const response = (await fetch(`${URL}/api/getAllFellow?block=` + block.toString()))
-  return response
-}
-
 const Home = ({ isuserFellow, userFellow }) => {
   const { setShowAuthFlow, isAuthenticated, user } = useDynamicContext()
   const [wrapIsAuthenticated, setWrapIsAuthenticated] = useState<boolean>(false);
   useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
-  let fellows
-  getFellows(userFellow.block).
-    then(resp => {
-      fellows = resp
-      return (
-        <Main>
-          {isAuthenticated && fellows ? (
-            fellows.forEach(e => {
-              <div className="card w-96 bg-base-100 shadow-xl">
-                <figure><img src={e.photo} alt="Kernel Fellow" /></figure>
-                <div className="card-body">
-                  <h2 className="card-title">{e.name}</h2>
-                  <p>{e.bio}</p>
-                  <div className="card-actions justify-end">
-                    <button className="btn btn-primary">View Profile</button>
-                  </div>
+  const [fellows, setFellow] = useState([])
+  useEffect(() => {
+    fetch('http://127.0.0.1:3000/api/getAllFellow?block=' + userFellow.block)
+      .then((resp) => { resp })
+      .then((respData) => {
+        setFellow(respData.data);
+      })
+  }, [])
+  return (
+    <Main>
+      {isAuthenticated ? (
+        fellows.map((fellow: any) => {
+          return (
+            <div className="card w-96 bg-base-100 shadow-xl">
+              <figure><img src={fellow.photo} alt="Kernel Fellow" /></figure>
+              <div className="card-body">
+                <h2 className="card-title">{fellow.name}</h2>
+                <p>{fellow.bio}</p>
+                <div className="card-actions justify-end">
+                  <button className="btn btn-primary">View Profile</button>
                 </div>
               </div>
-            })
-          ) : (
-            <p>Please log in to continue.</p>
-          )}
-        </Main>
-      );
-    })
-};
+            </div>
+          )
+        })
+      ) : (
+        <>Please log in to continue.</>
+      )}
+    </Main>
+  )
+}
 
 export default Home;
