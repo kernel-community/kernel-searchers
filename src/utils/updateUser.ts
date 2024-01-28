@@ -17,7 +17,3 @@ export const updateUser = async (user: Partial<User>) => {
   }
   return res;
 };
-
-export async function getServerSideProps() {
-  
-}

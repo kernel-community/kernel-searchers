@@ -2,6 +2,15 @@ import { useRouter } from "next/router";
 import useUserFromUserId from "src/hooks/useUserFromUserId";
 import Main from "src/layout/Main";
 
+interface User {
+  name: string
+}
+
+interface Profile extends User {
+  bio: string
+  photo: string
+}
+
 const Profile = () => {
   const { query } = useRouter();
   const { userId } = query;
@@ -28,5 +37,3 @@ const Profile = () => {
 }
 
 export default Profile;
-
-// {"id":"76ddb643-0002-48cb-98a2-790db42e010a","email":"avirajkhare00@gmail.com","name":"Aviraj Khare","block":8,"profile":{"id":"326fe59c-e87f-4138-ab34-dca893873a50","createdAt":"2024-01-17T23:15:29.056Z","updatedAt":"2024-01-18T09:26:58.257Z","userId":"76ddb643-0002-48cb-98a2-790db42e010a","bio":"I go by the username avirajkhare00","photo":"https://avatars.githubusercontent.com/u/49766964?v=4","twitter":null,"website":null,"city":null,"affiliation":null,"affliationDescription":null}}

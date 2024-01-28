@@ -7,6 +7,8 @@ import { useTheme } from 'next-themes'
 import { useState, useEffect } from "react";
 import React from "react";
 import isUserFellow from "src/ssr/IsUserFellow";
+import _ from "lodash";
+import { profile } from "console";
 
 // @note make checking for fellow server side
 // would involve using passportjs-dynamic on the server for auth
@@ -69,10 +71,13 @@ const Home = ({ isuserFellow, userFellow }) => {
   useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
   const [fellows, setFellow] = useState([])
   useEffect(() => {
-    fetch('http://127.0.0.1:3000/api/getAllFellow?block=' + userFellow.block)
-      .then((resp) => { resp })
-      .then((respData) => {
-        setFellow(respData.data);
+    fetch('/api/getAllFellow?block=' + userFellow.block, {
+      method: "GET",
+      headers: { "Content-type": "application/json" },
+    })
+      .then(async (resp) => {
+        const getProfiles = _.property('data.profiles')
+        setFellow(getProfiles(await resp.json()))
       })
   }, [])
   return (
@@ -86,7 +91,7 @@ const Home = ({ isuserFellow, userFellow }) => {
                 <h2 className="card-title">{fellow.name}</h2>
                 <p>{fellow.profile.bio}</p>
                 <div className="card-actions justify-end">
-                  <button className="btn btn-primary">View Profile</button>
+                  <button className="btn btn-primary" onClick={() => { window.location.href = '/u/' + fellow.id }}>View Profile</button>
                 </div>
               </div>
             </div>
