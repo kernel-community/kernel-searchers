@@ -9,7 +9,7 @@ const fetchData = async (email: string | undefined) => {
     },
   });
 
-  const { isFellow, fellow } = await isInFellowList(findUser?.email as string);
+  const { isFellow, fellow } = await isInFellowList(findUser?.email!);
 
   return {
     isUserFellow: isFellow,

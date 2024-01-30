@@ -4,14 +4,17 @@ import Main from "src/layout/Main";
 import RetroButton from "src/components/RetroButton";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useTheme } from 'next-themes'
-import { useState, useEffect } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import React from "react";
 import isUserFellow from "src/ssr/IsUserFellow";
 import _ from "lodash";
-import { profile } from "console";
 
 // @note make checking for fellow server side
 // would involve using passportjs-dynamic on the server for auth
+
+interface UserFellow {
+  block: string
+}
 
 export const ThemeChanger = () => {
   const { theme, setTheme } = useTheme()
@@ -65,41 +68,50 @@ export async function getServerSideProps() {
   }
 }
 
-const Home = ({ isuserFellow, userFellow }) => {
-  const { setShowAuthFlow, isAuthenticated, user } = useDynamicContext()
-  const [wrapIsAuthenticated, setWrapIsAuthenticated] = useState<boolean>(false);
+const fetchFellowProfiles = async (block: string) => {
+  const response = await fetch(`/api/getAllFellow?block=${block}`, {
+    method: "GET",
+    headers: { "Content-type": "application/json" },
+  });
+  const responseData = await response.json();
+  return _.get(responseData, 'data.profiles', []);
+};
+
+const useFetchFellowProfiles = (userFellow: { block: string }, setFellow: Dispatch<SetStateAction<never[]>>) => {
+  useEffect(() => {
+    fetchFellowProfiles(userFellow.block)
+      .then(profiles => setFellow(profiles))
+  }, []);
+};
+
+const Home = ({ userFellow }: { userFellow: UserFellow }) => {
+  const { isAuthenticated } = useDynamicContext()
+  const [, setWrapIsAuthenticated] = useState<boolean>(false);
   useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
   const [fellows, setFellow] = useState([])
-  useEffect(() => {
-    fetch('/api/getAllFellow?block=' + userFellow.block, {
-      method: "GET",
-      headers: { "Content-type": "application/json" },
-    })
-      .then(async (resp) => {
-        const getProfiles = _.property('data.profiles')
-        setFellow(getProfiles(await resp.json()))
-      })
-  }, [])
+  useFetchFellowProfiles(userFellow, setFellow)
   return (
     <Main>
-      {isAuthenticated ? (
-        fellows.map((fellow: any) => {
-          return (
-            <div className="card w-96 bg-base-100 shadow-xl">
-              <figure><img src={fellow.profile.photo} alt="Kernel Fellow" /></figure>
-              <div className="card-body">
-                <h2 className="card-title">{fellow.name}</h2>
-                <p>{fellow.profile.bio}</p>
-                <div className="card-actions justify-end">
-                  <button className="btn btn-primary" onClick={() => { window.location.href = '/u/' + fellow.id }}>View Profile</button>
+      <div className="grid grid-cols-4 gap-4">
+        {isAuthenticated ? (
+          fellows.map((fellow: any) => {
+            return (
+              <div className="card w-96 bg-base-100 shadow-xl">
+                <figure><img src={fellow.profile.photo} alt="Kernel Fellow" /></figure>
+                <div className="card-body">
+                  <h2 className="card-title">{fellow.name}</h2>
+                  <p>{fellow.profile.bio}</p>
+                  <div className="card-actions justify-end">
+                    <button className="btn btn-primary" onClick={() => { window.location.href = '/u/' + fellow.id }}>View Profile</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )
-        })
-      ) : (
-        <>Please log in to continue.</>
-      )}
+            )
+          })
+        ) : (
+          <>Please log in to continue.</>
+        )}
+      </div>
     </Main>
   )
 }

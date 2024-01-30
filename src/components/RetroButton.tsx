@@ -40,7 +40,7 @@ const RetroButton = (props: ButtonProps) => {
 export const RetroConnectKitButton = () =>{
   return (
     <ConnectKitButton.Custom>
-      {({ isConnected, isConnecting, show, hide, address, ensName, chain }) => {
+      {({ isConnected, isConnecting, show, address }) => {
         return (
           <RetroButton onClick={show} isLoading={isConnecting}>
             {isConnected ? formatWalletAddress(address) : "Connect"}
@@ -71,10 +71,5 @@ export const DynamicLoginButton = () => {
     <RetroButton onClick={() => setShowAuthFlow(true)}>Sign in</RetroButton>
   );
 }
-
-export async function getServerSideProps() {
-  
-}
-
 
 export default RetroButton;
