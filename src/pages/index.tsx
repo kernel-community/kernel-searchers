@@ -6,7 +6,7 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useTheme } from 'next-themes'
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import React from "react";
-import isUserFellow from "src/ssr/IsUserFellow";
+import isUserFellow from "src/utils/IsUserFellow";
 import _ from "lodash";
 
 // @note make checking for fellow server side
