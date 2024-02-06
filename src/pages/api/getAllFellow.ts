@@ -3,8 +3,7 @@ import { prisma } from "src/server/db";
 import _ from "lodash";
 
 const getAllFellow = async (req: NextApiRequest, res: NextApiResponse) => {
-  const getBlock = _.property('req.query.block')
-  const block: number = getBlock(req) as number
+  const block: number = parseInt(_.pick(req.query, ["block"])["block"] as string);
   const profiles = await prisma.user.findMany({
     where: { block: { equals: block } },
     include: { profile: true }
