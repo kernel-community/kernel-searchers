@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes'
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import React from "react";
 import isUserFellow from "src/utils/IsUserFellow";
+import fetchFellowProfiles from "src/utils/fetchFellowProfiles";
 import _ from "lodash";
 
 // @note make checking for fellow server side
@@ -67,15 +68,6 @@ export async function getServerSideProps() {
     }
   }
 }
-
-const fetchFellowProfiles = async (block: string) => {
-  const response = await fetch(`/api/getAllFellow?block=${block}`, {
-    method: "GET",
-    headers: { "Content-type": "application/json" },
-  });
-  const responseData = await response.json();
-  return _.get(responseData, 'data.profiles', []);
-};
 
 const useFetchFellowProfiles = (userFellow: { block: string }, setFellow: Dispatch<SetStateAction<never[]>>) => {
   useEffect(() => {
