@@ -1,6 +1,10 @@
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { ConnectKitButton } from "connectkit";
-import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { useState, type ButtonHTMLAttributes, type ReactNode, useEffect } from "react";
+import useUser from "src/hooks/useUser";
 import formatWalletAddress from "src/utils/formatWalletAddress";
+import SmallButton from "./SmallButton";
+import Link from "next/link";
 
 type ButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -46,5 +50,27 @@ export const RetroConnectKitButton = () =>{
     </ConnectKitButton.Custom>
   )
 }
+
+export const DynamicLoginButton = () => {
+  const { setShowAuthFlow, isAuthenticated } = useDynamicContext();
+  const [wrapIsAuthenticated, setWrapIsAuthenticated] = useState<boolean>(false);
+  const {user} = useUser();
+
+  // @help @dev @note not sure why but usage of isAuthenticated directly is resulting in a hydration error
+  useEffect(() => setWrapIsAuthenticated(isAuthenticated), [isAuthenticated])
+
+  if (user && wrapIsAuthenticated) {
+    // return <DynamicWidget />
+    return (<Link href={`/u/${user.id}`} passHref>
+    <SmallButton>
+      {user.name}
+    </SmallButton>
+  </Link>)
+  }
+  return (
+    <RetroButton onClick={() => setShowAuthFlow(true)}>Sign in</RetroButton>
+  );
+}
+
 
 export default RetroButton;
